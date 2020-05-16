@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farmerzon", "Farmerzon\Farmerzon.csproj", "{685A2381-F7BA-4071-8DBB-D223CB7E2219}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonDataAccessModel", "FarmerzonDataAccessModel\FarmerzonDataAccessModel.csproj", "{D9DCE21F-7525-4D07-88A0-9815717F251A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonDataAccess", "FarmerzonDataAccess\FarmerzonDataAccess.csproj", "{98A56F31-54C3-4356-A37F-8F516D2B3B62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonGraphModel", "FarmerzonGraphModel\FarmerzonGraphModel.csproj", "{419B0ABE-515B-4FE9-B274-70EC1DE13027}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{685A2381-F7BA-4071-8DBB-D223CB7E2219}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{685A2381-F7BA-4071-8DBB-D223CB7E2219}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{685A2381-F7BA-4071-8DBB-D223CB7E2219}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{685A2381-F7BA-4071-8DBB-D223CB7E2219}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9DCE21F-7525-4D07-88A0-9815717F251A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9DCE21F-7525-4D07-88A0-9815717F251A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9DCE21F-7525-4D07-88A0-9815717F251A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9DCE21F-7525-4D07-88A0-9815717F251A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98A56F31-54C3-4356-A37F-8F516D2B3B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A56F31-54C3-4356-A37F-8F516D2B3B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A56F31-54C3-4356-A37F-8F516D2B3B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A56F31-54C3-4356-A37F-8F516D2B3B62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{419B0ABE-515B-4FE9-B274-70EC1DE13027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{419B0ABE-515B-4FE9-B274-70EC1DE13027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{419B0ABE-515B-4FE9-B274-70EC1DE13027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{419B0ABE-515B-4FE9-B274-70EC1DE13027}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
