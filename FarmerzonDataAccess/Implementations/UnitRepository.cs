@@ -8,20 +8,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonDataAccess.Implementations
 {
-    public class UnitRepository : IUnitRepository
+    public class UnitRepository : AbstractRepository, IUnitRepository
     {
-        public async Task<IList<Unit>> GetEntities(int? id, string name, FarmerzonContext context)
+        public UnitRepository(FarmerzonContext context) : base(context)
         {
-            return await context.Units
+            // nothing to do here
+        }
+        
+        public async Task<IList<Unit>> GetEntities(int? id, string name)
+        {
+            return await Context.Units
                 .Where(unit => id == null || unit.UnitId == id)
                 .Where(unit => name == null || unit.Name == name)
                 .ToListAsync();
         }
 
-        public async Task<Unit> AddEntity(Unit unit, FarmerzonContext context)
+        public async Task<Unit> AddEntity(Unit unit)
         {
-            var result = await context.AddAsync(unit);
-            await context.SaveChangesAsync();
+            var result = await Context.AddAsync(unit);
+            await Context.SaveChangesAsync();
             return result.Entity;
         }
     }

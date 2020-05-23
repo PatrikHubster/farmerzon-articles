@@ -1,8 +1,5 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using FarmerzonDataAccess.Context;
-using FarmerzonDataAccess.Implementations;
 using FarmerzonDataAccess.Interfaces;
 using FarmerzonDataAccessModel;
 using FarmerzonGraphModel.Inputs;
@@ -13,12 +10,10 @@ namespace FarmerzonDataAccess
 {
     public class Mutation : ObjectGraphType
     {
-        private FarmerzonContext Context { get; set; }
         private IUnitRepository UnitRepository { get; set; }
-        public Mutation(FarmerzonContext context)
+        public Mutation(IUnitRepository unitRepository)
         {
-            Context = context;
-            UnitRepository = new UnitRepository();
+            UnitRepository = unitRepository;
 
             Field<UnitType>(
                 "createUnit",
@@ -31,26 +26,14 @@ namespace FarmerzonDataAccess
         private async Task<Unit> AddUnit(ResolveFieldContext<object> context)
         {
             var unit = context.GetArgument<Unit>("unit");
-            await using (var transaction = await Context.Database.BeginTransactionAsync())
+            var foundUnits = await UnitRepository.GetEntities(null, unit.Name);
+            if (foundUnits != null && foundUnits.Count > 0)
             {
-                try
-                {
-                    var foundUnits = await UnitRepository.GetEntities(null, unit.Name, Context);
-                    if (foundUnits != null && foundUnits.Count > 0)
-                    {
-                        return foundUnits.First();
-                    }
-                    
-                    var insertedUnit = await UnitRepository.AddEntity(unit, Context);
-                    transaction.Commit();
-                    return insertedUnit;
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    return null;
-                }
+                return foundUnits.First();
             }
+            
+            var insertedUnit = await UnitRepository.AddEntity(unit);
+            return insertedUnit;
         }
     }
 }

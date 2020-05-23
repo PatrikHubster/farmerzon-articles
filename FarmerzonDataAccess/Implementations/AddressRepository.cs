@@ -8,12 +8,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonDataAccess.Implementations
 {
-    public class AddressRepository : IAddressRepository
+    public class AddressRepository : AbstractRepository, IAddressRepository
     {
-        public async Task<IList<Address>> GetEntities(int? id, string doorNumber, string street, 
-            FarmerzonContext context)
+        public AddressRepository(FarmerzonContext context) : base(context)
         {
-            return await context.Addresses
+            // nothing to do here
+        }
+
+        public async Task<IList<Address>> GetEntities(int? id, string doorNumber, string street)
+        {
+            return await Context.Addresses
                 .Include(a => a.City)
                 .Include(a => a.State)
                 .Include(a => a.Country)

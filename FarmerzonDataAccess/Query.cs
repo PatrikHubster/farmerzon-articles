@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FarmerzonDataAccess.Context;
-using FarmerzonDataAccess.Implementations;
 using FarmerzonDataAccess.Interfaces;
 using FarmerzonDataAccessModel;
 using FarmerzonGraphModel.Outputs;
@@ -12,7 +10,6 @@ namespace FarmerzonDataAccess
 {
     public class Query : ObjectGraphType
     {
-        private FarmerzonContext Context { get; set; }
         private IAddressRepository AddressRepository { get; set; }
         private IArticleRepository ArticleRepository { get; set; }
         private ICityRepository CityRepository { get; set; }
@@ -21,16 +18,17 @@ namespace FarmerzonDataAccess
         private IPersonRepository PersonRepository { get; set; }
         private IStateRepository StateRepository { get; set; }
 
-        public Query(FarmerzonContext context)
+        public Query(IAddressRepository addressRepository, IArticleRepository articleRepository,
+            ICityRepository cityRepository, ICountryRepository countryRepository, IUnitRepository unitRepository,
+            IPersonRepository personRepository, IStateRepository stateRepository)
         {
-            Context = context;
-            AddressRepository = new AddressRepository();
-            ArticleRepository = new ArticleRepository();
-            CityRepository = new CityRepository();
-            CountryRepository = new CountryRepository();
-            UnitRepository = new UnitRepository();
-            PersonRepository = new PersonRepository();
-            StateRepository = new StateRepository();
+            AddressRepository = addressRepository;
+            ArticleRepository = articleRepository;
+            CityRepository = cityRepository;
+            CountryRepository = countryRepository;
+            UnitRepository = unitRepository;
+            PersonRepository = personRepository;
+            StateRepository = stateRepository;
 
             Name = "Query";
             Field<ListGraphType<AddressType>>(
@@ -112,11 +110,7 @@ namespace FarmerzonDataAccess
             var id = context.GetArgument<int?>("addressId");
             var doorNumber = context.GetArgument<string>("doorNumber");
             var street = context.GetArgument<string>("street");
-            
-            await using (await Context.Database.BeginTransactionAsync())
-            {
-                return await AddressRepository.GetEntities(id, doorNumber, street, Context);
-            }
+            return await AddressRepository.GetEntities(id, doorNumber, street);
         }
         
         private async Task<IList<Article>> GetArticles(ResolveFieldContext<object> context)
@@ -129,13 +123,8 @@ namespace FarmerzonDataAccess
             var size = context.GetArgument<double?>("size");
             var createdAt = context.GetArgument<DateTime?>("createdAt");
             var updatedAt = context.GetArgument<DateTime?>("updatedAt");
-            
-            await using (await Context.Database.BeginTransactionAsync())
-            {
-                return await ArticleRepository.GetEntities(id, name, description, price, amount, size,
-                    createdAt, updatedAt, Context);
-            }
-            
+            return await ArticleRepository.GetEntities(id, name, description, price, amount, size, createdAt, updatedAt);
+
         }
 
         private async Task<IList<City>> GetCities(ResolveFieldContext<object> context)
@@ -143,11 +132,7 @@ namespace FarmerzonDataAccess
             var id = context.GetArgument<int?>("cityId");
             var zipCode = context.GetArgument<string>("zipCode");
             var name = context.GetArgument<string>("name");
-
-            await using (await Context.Database.BeginTransactionAsync())
-            {
-                return await CityRepository.FindEntities(id, zipCode, name, Context);
-            }
+            return await CityRepository.FindEntities(id, zipCode, name);
         }
 
         private async Task<IList<Country>> GetCountries(ResolveFieldContext<object> context)
@@ -155,11 +140,7 @@ namespace FarmerzonDataAccess
             var id = context.GetArgument<int?>("countryId");
             var name = context.GetArgument<string>("name");
             var code = context.GetArgument<string>("code");
-            
-            await using (await Context.Database.BeginTransactionAsync())
-            {
-                return await CountryRepository.GetEntities(id, name, code, Context);
-            }
+            return await CountryRepository.GetEntities(id, name, code);
         }
 
         private async Task<IList<Person>> GetPeople(ResolveFieldContext<object> context)
@@ -167,33 +148,21 @@ namespace FarmerzonDataAccess
             var id = context.GetArgument<int?>("personId");
             var userName = context.GetArgument<string>("username");
             var normalizedUserName = context.GetArgument<string>("normalizedUsername");
-            
-            await using (await Context.Database.BeginTransactionAsync())
-            {
-                return await PersonRepository.GetEntities(id, userName, normalizedUserName, Context);
-            }
+            return await PersonRepository.GetEntities(id, userName, normalizedUserName);
         }
 
         private async Task<IList<Unit>> GetUnits(ResolveFieldContext<object> context)
         {
             var id = context.GetArgument<int?>("unitId");
             var name = context.GetArgument<string>("name");
-            
-            await using (await Context.Database.BeginTransactionAsync())
-            {
-                return await UnitRepository.GetEntities(id, name, Context);
-            }
+            return await UnitRepository.GetEntities(id, name);
         }
         
         private async Task<IList<State>> GetStates(ResolveFieldContext<object> context)
         {
             var id = context.GetArgument<int?>("stateId");
             var name = context.GetArgument<string>("name");
-            
-            await using (await Context.Database.BeginTransactionAsync())
-            {
-                return await StateRepository.GetEntities(id, name, Context);
-            }
+            return await StateRepository.GetEntities(id, name);
         }
     }
 }
