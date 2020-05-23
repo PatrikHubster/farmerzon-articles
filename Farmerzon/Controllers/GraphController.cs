@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Farmerzon.Graph;
-using FarmerzonDataAccess;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
@@ -13,36 +12,30 @@ namespace Farmerzon.Controllers
     [ApiController]
     public class GraphController : Controller
     {
-        private Query Query { get; set; }
-        private Mutation Mutation { get; set; }
+        private ISchema Schema { get; set; }
+        private IDocumentExecuter Executer { get; set; }
         
-        public GraphController(Query query, Mutation mutation)
+        public GraphController(ISchema schema, IDocumentExecuter executer)
         {
-            Query = query;
-            Mutation = mutation;
+            Schema = schema;
+            Executer = executer;
         }
         
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GraphQuery query)
         {
-            var result = await new DocumentExecuter().ExecuteAsync(new ExecutionOptions
+            var result = await Executer.ExecuteAsync(options =>
             {
-                Schema = new Schema
-                {
-                    Query = Query,
-                    Mutation = Mutation
-                },
-                Query = query.Query,
-                OperationName = query.OperationName,
-                Inputs = query.Variables.ToInputs()
-            });
+                options.Schema = Schema;
+                options.Query = query.Query;
+            }).ConfigureAwait(false);
 
             if(result.Errors?.Count > 0)
             {
                 return BadRequest(result);
             }
-
-            return Ok(result);
+            
+            return Ok(result.Data);
         }
     }
 }
