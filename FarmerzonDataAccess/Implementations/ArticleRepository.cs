@@ -9,12 +9,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonDataAccess.Implementations
 {
-    public class ArticleRepository : IArticleRepository
+    public class ArticleRepository : AbstractRepository, IArticleRepository
     {
-        public async Task<IList<Article>> GetEntities(int? id, string name, string description, double? price, 
-            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, FarmerzonContext context)
+        public ArticleRepository(FarmerzonContext context) : base(context)
         {
-            return await context.Articles
+            // nothing to do here
+        }
+        
+        public async Task<IList<Article>> GetEntities(int? id, string name, string description, double? price, 
+            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt)
+        {
+            return await Context.Articles
                 .Include(a => a.Person)
                 .Include(a => a.Unit)
                 .Where(a => id == null || a.ArticleId == id)

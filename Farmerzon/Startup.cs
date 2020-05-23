@@ -1,5 +1,8 @@
 using System.Text;
+using FarmerzonDataAccess;
 using FarmerzonDataAccess.Context;
+using FarmerzonDataAccess.Implementations;
+using FarmerzonDataAccess.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,7 +49,7 @@ namespace Farmerzon
             
             services.AddControllers();
 
-            services.AddDbContext<FarmerzonContext>(
+            services.AddDbContextPool<FarmerzonContext>(
                 option => option.UseNpgsql(
                     Configuration.GetConnectionString("Farmerzon"),
                     x => x.MigrationsAssembly(nameof(Farmerzon))));
@@ -71,6 +74,16 @@ namespace Farmerzon
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Secret"]))
                 };
             });
+            
+            services.AddScoped<IAddressRepository, AddressRepository>();
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<ICityRepository, CityRepository>();
+            services.AddScoped<ICountryRepository, CountryRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<IUnitRepository, UnitRepository>();
+            services.AddScoped<Query, Query>();
+            services.AddScoped<Mutation, Mutation>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

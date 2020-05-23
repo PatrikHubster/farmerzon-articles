@@ -8,12 +8,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonDataAccess.Implementations
 {
-    public class PersonRepository : IPersonRepository
+    public class PersonRepository : AbstractRepository, IPersonRepository
     {
-        public async Task<IList<Person>> GetEntities(int? id, string userName, 
-            string normalizedUserName, FarmerzonContext context)
+        public PersonRepository(FarmerzonContext context) : base(context)
         {
-            return await context.People
+            // nothing to do here
+        }
+        
+        public async Task<IList<Person>> GetEntities(int? id, string userName, string normalizedUserName)
+        {
+            return await Context.People
                 .Where(person => id == null || person.PersonId == id)
                 .Where(p => userName == null || p.UserName == userName)
                 .Where(p => normalizedUserName == null || p.NormalizedUserName == normalizedUserName)
