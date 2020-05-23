@@ -105,7 +105,7 @@ namespace FarmerzonDataAccess.Graph
             var size = context.GetArgument<double?>("size");
             var createdAt = context.GetArgument<DateTime?>("createdAt");
             var updatedAt = context.GetArgument<DateTime?>("updatedAt");
-            return await ArticleRepository.GetEntities(id, name, description, price, amount, size, createdAt, updatedAt);
+            return await ArticleRepository.GetEntitiesAsync(id, name, description, price, amount, size, createdAt, updatedAt);
 
         }
 
@@ -114,7 +114,7 @@ namespace FarmerzonDataAccess.Graph
             var id = context.GetArgument<int?>("cityId");
             var zipCode = context.GetArgument<string>("zipCode");
             var name = context.GetArgument<string>("name");
-            return await CityRepository.FindEntities(id, zipCode, name);
+            return await CityRepository.FindEntitiesAsync(id, zipCode, name);
         }
 
         private async Task<IList<Country>> GetCountries(ResolveFieldContext<object> context)
@@ -122,7 +122,7 @@ namespace FarmerzonDataAccess.Graph
             var id = context.GetArgument<int?>("countryId");
             var name = context.GetArgument<string>("name");
             var code = context.GetArgument<string>("code");
-            return await CountryRepository.GetEntities(id, name, code);
+            return await CountryRepository.GetEntitiesAsync(id, name, code);
         }
 
         private async Task<IList<Person>> GetPeople(ResolveFieldContext<object> context)
@@ -130,21 +130,21 @@ namespace FarmerzonDataAccess.Graph
             var id = context.GetArgument<int?>("personId");
             var userName = context.GetArgument<string>("username");
             var normalizedUserName = context.GetArgument<string>("normalizedUsername");
-            return await PersonRepository.GetEntities(id, userName, normalizedUserName);
+            return await PersonRepository.GetEntitiesAsync(id, userName, normalizedUserName);
         }
 
         private async Task<IList<Unit>> GetUnits(ResolveFieldContext<object> context)
         {
             var id = context.GetArgument<int?>("unitId");
             var name = context.GetArgument<string>("name");
-            return await UnitRepository.GetEntities(id, name);
+            return await UnitRepository.GetEntitiesAsync(id, name);
         }
         
         private async Task<IList<State>> GetStates(ResolveFieldContext<object> context)
         {
             var id = context.GetArgument<int?>("stateId");
             var name = context.GetArgument<string>("name");
-            return await StateRepository.GetEntities(id, name);
+            return await StateRepository.GetEntitiesAsync(id, name);
         }
     }
 }

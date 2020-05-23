@@ -26,13 +26,13 @@ namespace FarmerzonDataAccess.Graph
         private async Task<Unit> AddUnit(ResolveFieldContext<object> context)
         {
             var unit = context.GetArgument<Unit>("unit");
-            var foundUnits = await UnitRepository.GetEntities(null, unit.Name);
+            var foundUnits = await UnitRepository.GetEntitiesAsync(null, unit.Name);
             if (foundUnits != null && foundUnits.Count > 0)
             {
                 return foundUnits.First();
             }
             
-            var insertedUnit = await UnitRepository.AddEntity(unit);
+            var insertedUnit = await UnitRepository.AddEntityAsync(unit);
             return insertedUnit;
         }
     }

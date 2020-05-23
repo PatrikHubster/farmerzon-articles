@@ -6,7 +6,7 @@ namespace FarmerzonDataAccess.Interface
 {
     public interface IUnitRepository
     {
-        public Task<IList<Unit>> GetEntities(int? id, string name);
-        public Task<Unit> AddEntity(Unit unit);
+        public Task<IList<Unit>> GetEntitiesAsync(int? id, string name);
+        public Task<Unit> AddEntityAsync(Unit unit);
     }
 }

@@ -15,7 +15,7 @@ namespace FarmerzonDataAccess.Implementation
             // nothing to do here
         }
         
-        public async Task<IList<Country>> GetEntities(int? id, string name, string code)
+        public async Task<IList<Country>> GetEntitiesAsync(int? id, string name, string code)
         {
             return await Context.Countries
                 .Where(c => id == null || c.CountryId == id)

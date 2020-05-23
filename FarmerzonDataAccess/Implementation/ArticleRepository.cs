@@ -16,7 +16,7 @@ namespace FarmerzonDataAccess.Implementation
             // nothing to do here
         }
         
-        public async Task<IList<Article>> GetEntities(int? id, string name, string description, double? price, 
+        public async Task<IList<Article>> GetEntitiesAsync(int? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt)
         {
             return await Context.Articles

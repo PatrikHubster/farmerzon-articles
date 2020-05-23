@@ -6,6 +6,6 @@ namespace FarmerzonDataAccess.Interface
 {
     public interface ICityRepository
     {
-        public Task<IList<City>> FindEntities(int? id, string zipCode, string name);
+        public Task<IList<City>> FindEntitiesAsync(int? id, string zipCode, string name);
     }
 }

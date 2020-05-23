@@ -6,6 +6,6 @@ namespace FarmerzonDataAccess.Interface
 {
     public interface IPersonRepository
     {
-        public Task<IList<Person>> GetEntities(int? id, string userName, string normalizedUserName);
+        public Task<IList<Person>> GetEntitiesAsync(int? id, string userName, string normalizedUserName);
     }
 }
