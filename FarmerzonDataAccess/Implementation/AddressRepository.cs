@@ -15,7 +15,7 @@ namespace FarmerzonDataAccess.Implementation
             // nothing to do here
         }
 
-        public async Task<IList<Address>> GetEntities(int? id, string doorNumber, string street)
+        public async Task<IList<Address>> GetEntitiesAsync(int? id, string doorNumber, string street)
         {
             return await Context.Addresses
                 .Include(a => a.City)

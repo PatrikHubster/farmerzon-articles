@@ -15,7 +15,7 @@ namespace FarmerzonDataAccess.Implementation
             // nothing to do here
         }
         
-        public async Task<IList<Unit>> GetEntities(int? id, string name)
+        public async Task<IList<Unit>> GetEntitiesAsync(int? id, string name)
         {
             return await Context.Units
                 .Where(unit => id == null || unit.UnitId == id)
@@ -23,7 +23,7 @@ namespace FarmerzonDataAccess.Implementation
                 .ToListAsync();
         }
 
-        public async Task<Unit> AddEntity(Unit unit)
+        public async Task<Unit> AddEntityAsync(Unit unit)
         {
             var result = await Context.AddAsync(unit);
             await Context.SaveChangesAsync();

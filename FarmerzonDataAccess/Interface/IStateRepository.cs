@@ -6,6 +6,6 @@ namespace FarmerzonDataAccess.Interface
 {
     public interface IStateRepository
     {
-        public Task<IList<State>> GetEntities(int? id, string name);
+        public Task<IList<State>> GetEntitiesAsync(int? id, string name);
     }
 }

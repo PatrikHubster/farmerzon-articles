@@ -32,7 +32,7 @@ namespace FarmerzonDataAccess.Graph
             var id = context.GetArgument<int?>("addressId");
             var doorNumber = context.GetArgument<string>("doorNumber");
             var street = context.GetArgument<string>("street");
-            return await AddressRepository.GetEntities(id, doorNumber, street);
+            return await AddressRepository.GetEntitiesAsync(id, doorNumber, street);
         }
     }
 }

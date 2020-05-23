@@ -15,7 +15,7 @@ namespace FarmerzonDataAccess.Implementation
             // nothing to do here
         }
         
-        public async Task<IList<Person>> GetEntities(int? id, string userName, string normalizedUserName)
+        public async Task<IList<Person>> GetEntitiesAsync(int? id, string userName, string normalizedUserName)
         {
             return await Context.People
                 .Where(person => id == null || person.PersonId == id)

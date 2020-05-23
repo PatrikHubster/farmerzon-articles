@@ -7,7 +7,7 @@ namespace FarmerzonDataAccess.Interface
 {
     public interface IArticleRepository
     {
-        public Task<IList<Article>> GetEntities(int? id, string name, string description, double? price, 
+        public Task<IList<Article>> GetEntitiesAsync(int? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt);
     }
 }
