@@ -1,8 +1,15 @@
 using System.Text;
-using FarmerzonDataAccess;
+using Farmerzon.Graph;
+using FarmerzonDataAccess.Graph;
 using FarmerzonDataAccess.Context;
-using FarmerzonDataAccess.Implementations;
-using FarmerzonDataAccess.Interfaces;
+using FarmerzonDataAccess.Implementation;
+using FarmerzonDataAccess.Interface;
+using FarmerzonGraphModel.Input;
+using FarmerzonGraphModel.Output;
+using GraphQL;
+using GraphQL.Http;
+using GraphQL.Server;
+using GraphQL.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -74,7 +81,7 @@ namespace Farmerzon
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Secret"]))
                 };
             });
-            
+
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IArticleRepository, ArticleRepository>();
             services.AddScoped<ICityRepository, CityRepository>();
@@ -82,8 +89,31 @@ namespace Farmerzon
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IStateRepository, StateRepository>();
             services.AddScoped<IUnitRepository, UnitRepository>();
-            services.AddScoped<Query, Query>();
-            services.AddScoped<Mutation, Mutation>();
+
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<IDocumentWriter, DocumentWriter>();
+            services.AddScoped<ISchema, RootSchema>();
+            services.AddScoped<IDependencyResolver>(provider => new FuncDependencyResolver(provider.GetRequiredService));
+            
+            services.AddScoped<RootQuery>();
+            services.AddScoped<RootMutation>();
+            services.AddScoped<AddressQueryType>();
+
+            services.AddScoped<AddressType>();
+            services.AddScoped<ArticleForOrderType>();
+            services.AddScoped<ArticleType>();
+            services.AddScoped<CityType>();
+            services.AddScoped<CountryType>();
+            services.AddScoped<OrderType>();
+            services.AddScoped<PaymentMethodType>();
+            services.AddScoped<PersonType>();
+            services.AddScoped<StateType>();
+            services.AddScoped<UnitType>();
+
+            services.AddScoped<PersonInputType>();
+            services.AddScoped<UnitInputType>();
+
+            services.AddGraphQL(o => o.ExposeExceptions = true).AddGraphTypes(ServiceLifetime.Scoped);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
