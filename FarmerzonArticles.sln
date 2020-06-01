@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonArticles", "FarmerzonArticles\FarmerzonArticles.csproj", "{D25166FD-9351-471A-9C51-17C709B9C2E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonArticlesDataAccess", "FarmerzonArticlesDataAccess\FarmerzonArticlesDataAccess.csproj", "{0640B739-A434-4010-A2BD-C46E6E6FA07D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonArticlesManager", "FarmerzonArticlesManager\FarmerzonArticlesManager.csproj", "{AD3C1CFD-3519-4528-A89D-1393A850BE4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonArticlesDataAccessModel", "FarmerzonArticlesDataAccessModel\FarmerzonArticlesDataAccessModel.csproj", "{6638CF08-7705-4D92-8484-21BF3513C018}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmerzonArticlesDataTransferModel", "FarmerzonArticlesDataTransferModel\FarmerzonArticlesDataTransferModel.csproj", "{D1E9602D-4CD1-4384-9D1D-C309B98631B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D25166FD-9351-471A-9C51-17C709B9C2E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D25166FD-9351-471A-9C51-17C709B9C2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D25166FD-9351-471A-9C51-17C709B9C2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D25166FD-9351-471A-9C51-17C709B9C2E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0640B739-A434-4010-A2BD-C46E6E6FA07D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0640B739-A434-4010-A2BD-C46E6E6FA07D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0640B739-A434-4010-A2BD-C46E6E6FA07D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0640B739-A434-4010-A2BD-C46E6E6FA07D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD3C1CFD-3519-4528-A89D-1393A850BE4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD3C1CFD-3519-4528-A89D-1393A850BE4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD3C1CFD-3519-4528-A89D-1393A850BE4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD3C1CFD-3519-4528-A89D-1393A850BE4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6638CF08-7705-4D92-8484-21BF3513C018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6638CF08-7705-4D92-8484-21BF3513C018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6638CF08-7705-4D92-8484-21BF3513C018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6638CF08-7705-4D92-8484-21BF3513C018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1E9602D-4CD1-4384-9D1D-C309B98631B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E9602D-4CD1-4384-9D1D-C309B98631B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E9602D-4CD1-4384-9D1D-C309B98631B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E9602D-4CD1-4384-9D1D-C309B98631B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
