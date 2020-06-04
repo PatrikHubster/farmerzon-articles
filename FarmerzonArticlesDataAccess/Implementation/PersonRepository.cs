@@ -26,6 +26,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
         public async Task<Person> GetPersonByArticleAsync(Article article)
         {
             var managedArticle = await Context.Articles
+                .Include(a => a.Person)
                 .Where(a => a.ArticleId == article.ArticleId)
                 .FirstOrDefaultAsync();
             return managedArticle?.Person;

@@ -32,6 +32,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
         public async Task<Unit> GetUnitByArticleAsync(Article article)
         {
             var managedArticle = await Context.Articles
+                .Include(a => a.Unit)
                 .Where(a => a.ArticleId == article.ArticleId)
                 .FirstOrDefaultAsync();
             return managedArticle?.Unit;

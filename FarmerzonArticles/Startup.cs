@@ -60,10 +60,11 @@ namespace FarmerzonArticles
             
             services.AddControllers();
 
-            services.AddDbContextPool<FarmerzonArticlesContext>(
+            services.AddDbContext<FarmerzonArticlesContext>(
                 option => option.UseNpgsql(
                     Configuration.GetConnectionString("FarmerzonArticles"),
-                    x => x.MigrationsAssembly(nameof(FarmerzonArticles))));
+                    x => x.MigrationsAssembly(nameof(FarmerzonArticles))),
+                ServiceLifetime.Transient);
             
             services.AddAuthentication(options =>
             {
@@ -90,14 +91,14 @@ namespace FarmerzonArticles
             services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
 
             // repositories DI container
-            services.AddScoped<IArticleRepository, ArticleRepository>();
-            services.AddScoped<IPersonRepository, PersonRepository>();
-            services.AddScoped<IUnitRepository, UnitRepository>();
+            services.AddTransient<IArticleRepository, ArticleRepository>();
+            services.AddTransient<IPersonRepository, PersonRepository>();
+            services.AddTransient<IUnitRepository, UnitRepository>();
             
             // manager DI container
-            services.AddScoped<IArticleManager, ArticleManager>();
-            services.AddScoped<IPersonManager, PersonManager>();
-            services.AddScoped<IUnitManager, UnitManager>();
+            services.AddTransient<IArticleManager, ArticleManager>();
+            services.AddTransient<IPersonManager, PersonManager>();
+            services.AddTransient<IUnitManager, UnitManager>();
             
             // graphQL DI container
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
