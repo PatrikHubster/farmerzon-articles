@@ -7,13 +7,14 @@ FROM base AS builder
 ARG Configuration=Release
 WORKDIR /src
 COPY *.sln ./
-COPY ./Farmerzon/*.csproj Farmerzon/
-COPY ./FarmerzonDataAccess/*.csproj FarmerzonDataAccess/
-COPY ./FarmerzonDataAccessModel/*.csproj FarmerzonDataAccessModel/
-COPY ./FarmerzonGraphModel/*.csproj FarmerzonGraphModel/
+COPY ./FarmerzonArticles/*.csproj FarmerzonArticles/
+COPY ./FarmerzonArticlesDataAccess/*.csproj FarmerzonArticlesDataAccess/
+COPY ./FarmerzonArticlesDataAccessModel/*.csproj FarmerzonArticlesDataAccessModel/
+COPY ./FarmerzonArticlesManager/*.csproj FarmerzonArticlesManager/
+COPY ./FarmerzonArticlesDataTransferModel/*.csproj FarmerzonArticlesDataTransferModel/
 RUN dotnet restore --verbosity detailed
 COPY . .
-WORKDIR /src/Farmerzon
+WORKDIR /src/FarmerzonArticles
 RUN dotnet build -c $Configuration -o /app
 
 FROM builder AS publish
@@ -23,6 +24,6 @@ RUN dotnet publish -c $Configuration -o /app
 FROM base as final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "Farmerzon.dll"]
+ENTRYPOINT ["dotnet", "FarmerzonArticles.dll"]
 
 EXPOSE 5001
