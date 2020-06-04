@@ -15,7 +15,7 @@ namespace FarmerzonArticles.GraphOutputType
         {
             PersonManager = personManager;
             UnitManager = unitManager;
-            
+
             Name = "Article";
             Field<NonNullGraphType<IdGraphType>>(name: "articleId");
             

@@ -32,6 +32,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
         public async Task<IList<Article>> GetArticleByUnitAsync(Unit unit)
         {
             var managedUnit = await Context.Units
+                .Include(u => u.Articles)
                 .Where(u => u.UnitId == unit.UnitId)
                 .FirstOrDefaultAsync();
             return managedUnit == null ? new List<Article>() : managedUnit.Articles;
@@ -40,6 +41,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
         public async Task<IList<Article>> GetArticlesByPersonAsync(Person person)
         {
             var managedPerson = await Context.People
+                .Include(p => p.Articles)
                 .Where(p => p.PersonId == person.PersonId)
                 .FirstOrDefaultAsync();
             return managedPerson == null ? new List<Article>() : managedPerson.Articles;
