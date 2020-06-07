@@ -11,6 +11,7 @@ using FarmerzonArticlesManager.Implementation;
 using FarmerzonArticlesManager.Interface;
 using FarmerzonArticlesManager.Mapper;
 using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Http;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -101,6 +102,8 @@ namespace FarmerzonArticles
             services.AddTransient<IUnitManager, UnitManager>();
             
             // graphQL DI container
+            services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
+            services.AddSingleton<DataLoaderDocumentListener>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddScoped<ISchema, RootSchema>();
@@ -114,7 +117,6 @@ namespace FarmerzonArticles
             services.AddScoped<UnitOutputType>();
             
             services.AddScoped<UnitInputType>();
-
             services.AddGraphQL(o => o.ExposeExceptions = true).AddGraphTypes(ServiceLifetime.Scoped);
         }
 

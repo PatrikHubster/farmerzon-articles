@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using FarmerzonArticlesManager.Interface;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using DTO = FarmerzonArticlesDataTransferModel;
@@ -8,39 +10,61 @@ namespace FarmerzonArticles.GraphOutputType
 {
     public class ArticleOutputType : ObjectGraphType<DTO.Article>
     {
+        private IDataLoaderContextAccessor Accessor { get; set; }
         private IPersonManager PersonManager { get; set; }
         private IUnitManager UnitManager { get; set; }
 
-        public ArticleOutputType(IPersonManager personManager, IUnitManager unitManager)
+        private void InitDependencies(IDataLoaderContextAccessor accessor, IPersonManager personManager,
+            IUnitManager unitManager)
         {
+            Accessor = accessor;
             PersonManager = personManager;
             UnitManager = unitManager;
+        }
 
+        private void InitType()
+        {
             Name = "Article";
-            Field<NonNullGraphType<IdGraphType>>(name: "articleId");
             
-            Field<NonNullGraphType<PersonOutputType>>(name: "person", resolve: LoadPerson);
-            Field<NonNullGraphType<UnitOutputType>>(name: "unit", resolve: LoadUnit);
+            Field<IdGraphType, long>().Name("articleId");
             
-            Field<NonNullGraphType<StringGraphType>>(name: "name");
-            Field<NonNullGraphType<StringGraphType>>(name: "description");
-            Field<NonNullGraphType<FloatGraphType>>(name: "price");
-            Field<NonNullGraphType<FloatGraphType>>(name: "size");
-            Field<NonNullGraphType<IntGraphType>>(name: "amount");
-            Field<NonNullGraphType<DateTimeGraphType>>(name: "updatedAt");
-            Field<NonNullGraphType<DateTimeGraphType>>(name: "createdAt");
+            Field<PersonOutputType, DTO.Person>()
+                .Name("person")
+                .ResolveAsync(LoadPerson);
+            Field<UnitOutputType, DTO.Unit>()
+                .Name("unit")
+                .ResolveAsync(LoadUnit);
+            
+            Field<StringGraphType, string>().Name("name");
+            Field<StringGraphType, string>().Name("description");
+            Field<FloatGraphType, double>().Name("price");
+            Field<FloatGraphType, double>().Name("size");
+            Field<IntGraphType, int>().Name("amount");
+            Field<DateTimeGraphType, DateTime>().Name("updatedAt");
+            Field<DateTimeGraphType, DateTime>().Name("createdAt");
+        }
+        
+        public ArticleOutputType(IDataLoaderContextAccessor accessor, IPersonManager personManager, 
+            IUnitManager unitManager)
+        {
+            InitDependencies(accessor, personManager, unitManager);
+            InitType();
         }
 
-        private async Task<DTO.Unit> LoadUnit(ResolveFieldContext<DTO.Article> context)
+        private Task<DTO.Unit> LoadUnit(ResolveFieldContext<DTO.Article> context)
         {
-            var article = context.Source;
-            return await UnitManager.GetUnitByArticleAsync(article);
+            var loader =
+                Accessor.Context.GetOrAddBatchLoader<long, DTO.Unit>("GetUnitByArticleId", 
+                    UnitManager.GetUnitsByArticleIdAsync);
+            return loader.LoadAsync(context.Source.ArticleId);
         }
 
-        private async Task<DTO.Person> LoadPerson(ResolveFieldContext<DTO.Article> context)
+        private Task<DTO.Person> LoadPerson(ResolveFieldContext<DTO.Article> context)
         {
-            var article = context.Source;
-            return await PersonManager.GetPersonByArticleAsync(article);
+            var loader =
+                Accessor.Context.GetOrAddBatchLoader<long, DTO.Person>("GetPersonByArticleId", 
+                    PersonManager.GetPeopleByArticleIdAsync);
+            return loader.LoadAsync(context.Source.ArticleId);
         }
     }
 }

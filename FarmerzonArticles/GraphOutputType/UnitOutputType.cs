@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FarmerzonArticlesManager.Interface;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using DTO = FarmerzonArticlesDataTransferModel;
@@ -9,24 +10,39 @@ namespace FarmerzonArticles.GraphOutputType
 {
     public class UnitOutputType : ObjectGraphType<DTO.Unit>
     {
+        private IDataLoaderContextAccessor Accessor { get; set; }
         private IArticleManager ArticleManager { get; set; }
 
-        public UnitOutputType(IArticleManager articleManager)
+        private void InitDependencies(IDataLoaderContextAccessor accessor, IArticleManager articleManager)
         {
-            ArticleManager = articleManager;
-            
-            Name = "Unit";
-            Field<NonNullGraphType<IdGraphType>>(name: "unitId");
-            
-            Field<NonNullGraphType<ListGraphType<ArticleOutputType>>>(name: "articles", resolve: LoadArticles);
-            
-            Field<NonNullGraphType<StringGraphType>>(name: "name");
+            Accessor = accessor;
+            ArticleManager = articleManager;            
         }
 
-        private async Task<IList<DTO.Article>> LoadArticles(ResolveFieldContext<DTO.Unit> context)
+        private void InitType()
         {
-            var unit = context.Source;
-            return await ArticleManager.GetArticlesByUnitAsync(unit);
+            Name = "Unit";
+            Field<IdGraphType, long>(name: "unitId");
+            
+            Field<ListGraphType<ArticleOutputType>, IEnumerable<DTO.Article>>()
+                .Name("articles")
+                .ResolveAsync(LoadArticles);
+            
+            Field<StringGraphType, string>().Name("name");            
+        }
+
+        public UnitOutputType(IDataLoaderContextAccessor accessor, IArticleManager articleManager)
+        {
+            InitDependencies(accessor, articleManager);
+            InitType();
+        }
+        
+        private Task<IEnumerable<DTO.Article>> LoadArticles(ResolveFieldContext<DTO.Unit> context)
+        {
+            var loader =
+                Accessor.Context.GetOrAddCollectionBatchLoader<long, DTO.Article>("GetArticlesByUnitId",
+                    ArticleManager.GetArticlesByUnitIdAsync);
+            return loader.LoadAsync(context.Source.UnitId);
         }
     }
 }

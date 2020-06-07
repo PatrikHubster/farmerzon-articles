@@ -4,7 +4,7 @@ namespace FarmerzonArticlesDataTransferModel
 {
     public class Person
     {
-        public int PersonId { get; set; }
+        public long PersonId { get; set; }
         
         public IList<Article> Articles { get; set; }
         

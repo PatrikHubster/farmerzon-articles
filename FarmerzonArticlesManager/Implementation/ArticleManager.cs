@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FarmerzonArticlesDataAccess.Interface;
@@ -13,13 +14,18 @@ namespace FarmerzonArticlesManager.Implementation
     public class ArticleManager : AbstractManager, IArticleManager
     {
         private IArticleRepository ArticleRepository { get; set; }
+        private IPersonRepository PersonRepository { get; set; }
+        private IUnitRepository UnitRepository { get; set; }
 
-        public ArticleManager(IMapper mapper, IArticleRepository articleRepository) : base(mapper)
+        public ArticleManager(IMapper mapper, IArticleRepository articleRepository, 
+            IPersonRepository personRepository, IUnitRepository unitRepository) : base(mapper)
         {
             ArticleRepository = articleRepository;
+            PersonRepository = personRepository;
+            UnitRepository = unitRepository;
         }
         
-        public async Task<IList<DTO.Article>> GetEntitiesAsync(int? id, string name, string description, double? price, 
+        public async Task<IList<DTO.Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt)
         {
             var articles = await ArticleRepository.GetEntitiesAsync(id, name, description, price,
@@ -27,18 +33,23 @@ namespace FarmerzonArticlesManager.Implementation
             return Mapper.Map<IList<DTO.Article>>(articles);
         }
 
-        public async Task<IList<DTO.Article>> GetArticlesByUnitAsync(DTO.Unit unit)
+        public async Task<ILookup<long, DTO.Article>> GetArticlesByPersonIdAsync(IEnumerable<long> ids)
         {
-            var convertedUnit = Mapper.Map<DAO.Unit>(unit);
-            var articles = await ArticleRepository.GetArticleByUnitAsync(convertedUnit);
-            return Mapper.Map<IList<DTO.Article>>(articles);
+            var people = 
+                await PersonRepository.GetEntitiesByIdAsync(ids, 
+                    new List<string> {nameof(DAO.Person.Articles)});
+            return people
+                .SelectMany(p => p.Articles.Select(a => new {Key = p.PersonId, Value = Mapper.Map<DTO.Article>(a)}))
+                .ToLookup(pair => pair.Key, pair => pair.Value);
         }
 
-        public async Task<IList<DTO.Article>> GetArticlesByPersonAsync(DTO.Person person)
+        public async Task<ILookup<long, DTO.Article>> GetArticlesByUnitIdAsync(IEnumerable<long> ids)
         {
-            var convertedPerson = Mapper.Map<DAO.Person>(person);
-            var articles = await ArticleRepository.GetArticlesByPersonAsync(convertedPerson);
-            return Mapper.Map<IList<DTO.Article>>(articles);
+            var units = 
+                await UnitRepository.GetEntitiesByIdAsync(ids, new List<string> {nameof(DAO.Unit.Articles)});
+            return units
+                .SelectMany(u => u.Articles.Select(a => new {Key = u.UnitId, Value = Mapper.Map<DTO.Article>(a)}))
+                .ToLookup(pair => pair.Key, pair => pair.Value);
         }
     }
 }

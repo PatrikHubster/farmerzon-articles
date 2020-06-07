@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
-    public class PersonRepository : AbstractRepository, IPersonRepository
+    public class PersonRepository : AbstractRepository<Person>, IPersonRepository
     {
         public PersonRepository(FarmerzonArticlesContext context) : base(context)
         {
             // nothing to do here
         }
         
-        public async Task<IList<Person>> GetEntitiesAsync(int? id, string userName, string normalizedUserName)
+        public async Task<IList<Person>> GetEntitiesAsync(long? id, string userName, string normalizedUserName)
         {
             return await Context.People
                 .Where(person => id == null || person.PersonId == id)
@@ -23,13 +23,11 @@ namespace FarmerzonArticlesDataAccess.Implementation
                 .ToListAsync();
         }
 
-        public async Task<Person> GetPersonByArticleAsync(Article article)
+        public async Task<IList<Person>> GetEntitiesByIdAsync(IEnumerable<long> ids, IList<string> includes)
         {
-            var managedArticle = await Context.Articles
-                .Include(a => a.Person)
-                .Where(a => a.ArticleId == article.ArticleId)
-                .FirstOrDefaultAsync();
-            return managedArticle?.Person;
+            var query = Context.People.Where(p => ids.Contains(p.PersonId));
+            query = AddIncludesToQuery(query, includes);
+            return await query.ToListAsync();
         }
     }
 }

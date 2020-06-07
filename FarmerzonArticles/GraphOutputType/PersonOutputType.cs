@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FarmerzonArticlesManager.Interface;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 using DTO = FarmerzonArticlesDataTransferModel;
@@ -9,25 +10,40 @@ namespace FarmerzonArticles.GraphOutputType
 {
     public class PersonOutputType : ObjectGraphType<DTO.Person>
     {
+        private IDataLoaderContextAccessor Accessor { get; set; }
         private IArticleManager ArticleManager { get; set; }
 
-        public PersonOutputType(IArticleManager articleManager)
+        private void InitDependencies(IDataLoaderContextAccessor accessor, IArticleManager articleManager)
         {
+            Accessor = accessor;
             ArticleManager = articleManager;
-            
-            Name = "Person";
-            Field<NonNullGraphType<IdGraphType>>(name: "personId");
-            
-            Field<NonNullGraphType<ListGraphType<ArticleOutputType>>>(name: "articles", resolve: LoadArticles);
-            
-            Field<NonNullGraphType<StringGraphType>>(name: "normalizedUserName");
-            Field<NonNullGraphType<StringGraphType>>(name: "userName");
         }
 
-        private async Task<IList<DTO.Article>> LoadArticles(ResolveFieldContext<DTO.Person> context)
+        private void InitType()
         {
-            var person = context.Source;
-            return await ArticleManager.GetArticlesByPersonAsync(person);
+            Name = "Person";
+            Field<IdGraphType, long>().Name("personId");
+            
+            Field<ListGraphType<ArticleOutputType>, IEnumerable<DTO.Article>>()
+                .Name("articles")
+                .ResolveAsync(LoadArticles);
+            
+            Field<StringGraphType, string>().Name("normalizedUserName");
+            Field<StringGraphType, string>().Name("userName");
+        }
+
+        public PersonOutputType(IDataLoaderContextAccessor accessor, IArticleManager articleManager)
+        {
+            InitDependencies(accessor, articleManager);
+            InitType();
+        }
+        
+        private Task<IEnumerable<DTO.Article>> LoadArticles(ResolveFieldContext<DTO.Person> context)
+        {
+            var loader =
+                Accessor.Context.GetOrAddCollectionBatchLoader<long, DTO.Article>("GetArticlesByPersonId",
+                    ArticleManager.GetArticlesByPersonIdAsync);
+            return loader.LoadAsync(context.Source.PersonId);
         }
     }
 }

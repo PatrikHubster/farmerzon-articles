@@ -15,12 +15,16 @@ namespace FarmerzonArticles.GraphControllerType
         private IPersonManager PersonManager { get; set; }
         private IUnitManager UnitManager { get; set; }
 
-        public RootQuery(IArticleManager articleManager, IPersonManager personManager, IUnitManager unitManager)
+        private void InitDependencies(IArticleManager articleManager, IPersonManager personManager, 
+            IUnitManager unitManager)
         {
             ArticleManager = articleManager;
             PersonManager = personManager;
             UnitManager = unitManager;
-            
+        }
+
+        private void InitQuery()
+        {
             Name = "RootQuery";
             Field<ListGraphType<ArticleOutputType>>(name: "articles",
                 arguments: new QueryArguments
@@ -51,9 +55,15 @@ namespace FarmerzonArticles.GraphControllerType
                 }, resolve: LoadUnits);
         }
 
+        public RootQuery(IArticleManager articleManager, IPersonManager personManager, IUnitManager unitManager)
+        {
+            InitDependencies(articleManager, personManager, unitManager);
+            InitQuery();
+        }
+
         private async Task<IList<DTO.Article>> LoadArticles(ResolveFieldContext<object> context)
         {
-            var articleId = context.GetArgument<int?>("articleId");
+            var articleId = context.GetArgument<long?>("articleId");
             var name = context.GetArgument<string>("name");
             var description = context.GetArgument<string>("description");
             var price = context.GetArgument<double?>("price");
@@ -67,7 +77,7 @@ namespace FarmerzonArticles.GraphControllerType
         
         private async Task<IList<DTO.Person>> LoadPeople(ResolveFieldContext<object> context)
         {
-            var personId = context.GetArgument<int?>("personId");
+            var personId = context.GetArgument<long?>("personId");
             var userName = context.GetArgument<string>("userName");
             var normalizedUserName = context.GetArgument<string>("normalizedUserName");
             return await PersonManager.GetEntitiesAsync(personId, userName, normalizedUserName);
@@ -75,7 +85,7 @@ namespace FarmerzonArticles.GraphControllerType
         
         private async Task<IList<DTO.Unit>> LoadUnits(ResolveFieldContext<object> context)
         {
-            var unitId = context.GetArgument<int?>("unitId");
+            var unitId = context.GetArgument<long?>("unitId");
             var name = context.GetArgument<string>("name");
             return await UnitManager.GetEntitiesAsync(unitId, name);
         }

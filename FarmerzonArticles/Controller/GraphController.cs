@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using FarmerzonArticles.GraphControllerType;
 using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,13 @@ namespace FarmerzonArticles.Controller
     {
         private ISchema Schema { get; set; }
         private IDocumentExecuter Executer { get; set; }
-        
-        public GraphController(ISchema schema, IDocumentExecuter executer)
+        private DataLoaderDocumentListener DocumentListener { get; set; }
+
+        public GraphController(ISchema schema, IDocumentExecuter executer, DataLoaderDocumentListener documentListener)
         {
             Schema = schema;
             Executer = executer;
+            DocumentListener = documentListener;
         }
         
         [HttpPost]
@@ -28,6 +31,7 @@ namespace FarmerzonArticles.Controller
             {
                 options.Schema = Schema;
                 options.Query = query.Query;
+                options.Listeners.Add(DocumentListener);
             }).ConfigureAwait(false);
 
             if(result.Errors?.Count > 0)

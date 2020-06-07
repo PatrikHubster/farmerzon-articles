@@ -8,14 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
-    public class ArticleRepository : AbstractRepository, IArticleRepository
+    public class ArticleRepository : AbstractRepository<Article>, IArticleRepository
     {
         public ArticleRepository(FarmerzonArticlesContext context) : base(context)
         {
             // nothing to do here
         }
         
-        public async Task<IList<Article>> GetEntitiesAsync(int? id, string name, string description, double? price, 
+        public async Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt)
         {
             return await Context.Articles
@@ -29,22 +29,11 @@ namespace FarmerzonArticlesDataAccess.Implementation
                 .ToListAsync();
         }
 
-        public async Task<IList<Article>> GetArticleByUnitAsync(Unit unit)
+        public async Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IList<string> includes)
         {
-            var managedUnit = await Context.Units
-                .Include(u => u.Articles)
-                .Where(u => u.UnitId == unit.UnitId)
-                .FirstOrDefaultAsync();
-            return managedUnit == null ? new List<Article>() : managedUnit.Articles;
-        }
-
-        public async Task<IList<Article>> GetArticlesByPersonAsync(Person person)
-        {
-            var managedPerson = await Context.People
-                .Include(p => p.Articles)
-                .Where(p => p.PersonId == person.PersonId)
-                .FirstOrDefaultAsync();
-            return managedPerson == null ? new List<Article>() : managedPerson.Articles;
+            var query = Context.Articles.Where(a => ids.Contains(a.ArticleId));
+            query = AddIncludesToQuery(query, includes);
+            return await query.ToListAsync();
         }
     }
 }

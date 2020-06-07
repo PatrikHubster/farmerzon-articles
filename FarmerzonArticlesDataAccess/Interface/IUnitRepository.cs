@@ -6,8 +6,9 @@ namespace FarmerzonArticlesDataAccess.Interface
 {
     public interface IUnitRepository
     {
-        public Task<IList<Unit>> GetEntitiesAsync(int? id, string name);
+        public Task<IList<Unit>> GetEntitiesAsync(long? id, string name);
+        public Task<IList<Unit>> GetEntitiesByIdAsync(IEnumerable<long> ids, IList<string> includes);
+        
         public Task<Unit> AddEntityAsync(Unit unit);
-        public Task<Unit> GetUnitByArticleAsync(Article article);
     }
 }
