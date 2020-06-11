@@ -6,7 +6,7 @@ namespace FarmerzonArticlesDataAccessModel
     {
         // primary key
         public long ArticleId { get; set; }
-        
+
         // relationships
         public Person Person { get; set; }
         public Unit Unit { get; set; }

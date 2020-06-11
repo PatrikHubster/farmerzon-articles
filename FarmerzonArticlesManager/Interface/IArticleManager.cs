@@ -11,7 +11,7 @@ namespace FarmerzonArticlesManager.Interface
     {
         public Task<IList<DTO.Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt);
-        public Task<ILookup<long, DTO.Article>> GetArticlesByPersonIdAsync(IEnumerable<long> ids);
-        public Task<ILookup<long, DTO.Article>> GetArticlesByUnitIdAsync(IEnumerable<long> ids);
+        public Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByPersonIdAsync(IEnumerable<long> ids);
+        public Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByUnitIdAsync(IEnumerable<long> ids);
     }
 }

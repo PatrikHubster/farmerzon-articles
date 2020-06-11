@@ -9,6 +9,6 @@ namespace FarmerzonArticlesDataAccess.Interface
     {
         public Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt);
-        public Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IList<string> includes);
+        public Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IEnumerable<string> includes);
     }
 }

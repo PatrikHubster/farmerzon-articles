@@ -4,10 +4,10 @@ namespace FarmerzonArticlesDataTransferModel
 {
     public class Unit
     {
+        // primary key
         public long UnitId { get; set; }
-        
-        public IList<Article> Articles { get; set; }
-        
+
+        // attributes
         public string Name { get; set; }
     }
 }

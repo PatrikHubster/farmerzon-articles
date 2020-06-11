@@ -28,26 +28,12 @@ namespace FarmerzonArticlesManager.Implementation
             return Mapper.Map<IList<DTO.Person>>(people);
         }
 
-        public async Task<IDictionary<long, DTO.Person>> GetPeopleByArticleIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, DTO.Person>> GetPeopleByArticleIdAsync(IEnumerable<long> ids)
         {
             var articles = 
                 await ArticleRepository.GetEntitiesByIdAsync(ids, new List<string>{nameof(DAO.Article.Person)});
-            var personForArticle = new Dictionary<long, DTO.Person>();
-            var people = new Dictionary<long, DTO.Person>();
-            foreach (var article in articles)
-            {
-                if (personForArticle.ContainsKey(article.ArticleId)) continue;
-                
-                // If you save the already converted units in an own dictionary you save the conversion if the
-                // unit occurs 1000 times. If this is not necessary you have lost a single assignment.
-                if (!people.ContainsKey(article.Person.PersonId))
-                {
-                    people.Add(article.Person.PersonId, Mapper.Map<DTO.Person>(article.Person));
-                }
-                personForArticle.Add(article.ArticleId, people[article.Person.PersonId]);
-            }
-
-            return personForArticle;
+            return articles.ToDictionary(key => key.ArticleId.ToString(), 
+                value => Mapper.Map<DTO.Person>(value.Person));
         }
     }
 }

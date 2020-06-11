@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
-    public class ArticleRepository : AbstractRepository<Article>, IArticleRepository
+    public class ArticleRepository : AbstractRepository, IArticleRepository
     {
         public ArticleRepository(FarmerzonArticlesContext context) : base(context)
         {
@@ -29,11 +29,12 @@ namespace FarmerzonArticlesDataAccess.Implementation
                 .ToListAsync();
         }
 
-        public async Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IList<string> includes)
+        public async Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IEnumerable<string> includes)
         {
-            var query = Context.Articles.Where(a => ids.Contains(a.ArticleId));
-            query = AddIncludesToQuery(query, includes);
-            return await query.ToListAsync();
+            return await Context.Articles
+                .IncludeMany(includes)
+                .Where(a => ids.Contains(a.ArticleId))
+                .ToListAsync();
         }
     }
 }

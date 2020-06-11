@@ -5,7 +5,7 @@ namespace FarmerzonArticlesDataAccessModel
     public class Person
     {
         // primary key
-        public long PersonId { get; set; }
+        public virtual long PersonId { get; set; }
         
         // relationships
         public IList<Article> Articles { get; set; }

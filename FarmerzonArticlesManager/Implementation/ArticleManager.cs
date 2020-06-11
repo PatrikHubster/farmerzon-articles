@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FarmerzonArticlesDataAccess.Interface;
@@ -33,23 +32,46 @@ namespace FarmerzonArticlesManager.Implementation
             return Mapper.Map<IList<DTO.Article>>(articles);
         }
 
-        public async Task<ILookup<long, DTO.Article>> GetArticlesByPersonIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByPersonIdAsync(IEnumerable<long> ids)
         {
-            var people = 
-                await PersonRepository.GetEntitiesByIdAsync(ids, 
-                    new List<string> {nameof(DAO.Person.Articles)});
-            return people
-                .SelectMany(p => p.Articles.Select(a => new {Key = p.PersonId, Value = Mapper.Map<DTO.Article>(a)}))
-                .ToLookup(pair => pair.Key, pair => pair.Value);
-        }
+            var people =
+                await PersonRepository.GetEntitiesByIdAsync(ids, new List<string> {nameof(DAO.Person.Articles)});
 
-        public async Task<ILookup<long, DTO.Article>> GetArticlesByUnitIdAsync(IEnumerable<long> ids)
+            var articlesForPeople = new Dictionary<string, IList<DTO.Article>>();
+            foreach (var person in people)
+            {
+                if (!articlesForPeople.ContainsKey(person.PersonId.ToString()) && person.Articles.Count > 0)
+                {
+                    articlesForPeople.Add(person.PersonId.ToString(), new List<DTO.Article>());
+                    foreach (var article in person.Articles)
+                    {
+                        articlesForPeople[person.PersonId.ToString()].Add(Mapper.Map<DTO.Article>(article));
+                    }
+                }
+            }
+
+            return articlesForPeople;
+        }
+        
+        public async Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByUnitIdAsync(IEnumerable<long> ids)
         {
-            var units = 
+            var units =
                 await UnitRepository.GetEntitiesByIdAsync(ids, new List<string> {nameof(DAO.Unit.Articles)});
-            return units
-                .SelectMany(u => u.Articles.Select(a => new {Key = u.UnitId, Value = Mapper.Map<DTO.Article>(a)}))
-                .ToLookup(pair => pair.Key, pair => pair.Value);
+
+            var articlesForUnits = new Dictionary<string, IList<DTO.Article>>();
+            foreach (var unit in units)
+            {
+                if (!articlesForUnits.ContainsKey(unit.UnitId.ToString()) && unit.Articles.Count > 0)
+                {
+                    articlesForUnits.Add(unit.UnitId.ToString(), new List<DTO.Article>());
+                    foreach (var article in unit.Articles)
+                    {
+                        articlesForUnits[unit.UnitId.ToString()].Add(Mapper.Map<DTO.Article>(article));
+                    }
+                }
+            }
+
+            return articlesForUnits;
         }
     }
 }
