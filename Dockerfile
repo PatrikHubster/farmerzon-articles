@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:latest AS base
 WORKDIR /app
 ENV ASPNETCORE_ENVIRONMENT Production
-ENV ASPNETCORE_URLS http://*:5001
+ENV ASPNETCORE_URLS http://*:5000
 
 FROM base AS builder
 ARG Configuration=Release
@@ -10,8 +10,9 @@ COPY *.sln ./
 COPY ./FarmerzonArticles/*.csproj FarmerzonArticles/
 COPY ./FarmerzonArticlesDataAccess/*.csproj FarmerzonArticlesDataAccess/
 COPY ./FarmerzonArticlesDataAccessModel/*.csproj FarmerzonArticlesDataAccessModel/
-COPY ./FarmerzonArticlesManager/*.csproj FarmerzonArticlesManager/
 COPY ./FarmerzonArticlesDataTransferModel/*.csproj FarmerzonArticlesDataTransferModel/
+COPY ./FarmerzonArticlesErrorHandling/*.csproj FarmerzonArticlesErrorHandling/
+COPY ./FarmerzonArticlesManager/*.csproj FarmerzonArticlesManager/
 RUN dotnet restore --verbosity detailed
 COPY . .
 WORKDIR /src/FarmerzonArticles
@@ -25,5 +26,3 @@ FROM base as final
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "FarmerzonArticles.dll"]
-
-EXPOSE 5001
