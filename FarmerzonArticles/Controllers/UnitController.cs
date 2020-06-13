@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FarmerzonArticlesManager.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ using DTO = FarmerzonArticlesDataTransferModel;
 
 namespace FarmerzonArticles.Controllers
 {
+    [Authorize]
     [Route("unit")]
     [ApiController]
     public class UnitController : ControllerBase
