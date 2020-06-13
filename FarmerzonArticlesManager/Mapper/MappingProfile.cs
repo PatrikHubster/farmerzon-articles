@@ -9,10 +9,6 @@ namespace FarmerzonArticlesManager.Mapper
     {
         public MappingProfile()
         {
-            AllowNullCollections = true;
-            AllowNullDestinationValues = true;
-            AllowNullCollections = true;
-
             // Article
             CreateMap<DAO.Article, DTO.Article>();
             CreateMap<DTO.Article, DAO.Article>();
