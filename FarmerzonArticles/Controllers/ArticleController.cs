@@ -60,7 +60,7 @@ namespace FarmerzonArticles.Controllers
         /// <summary>
         /// Request a list of articles.
         /// </summary>
-        /// <param name="personIds">Find articles to the listed person ids.</param>
+        /// <param name="normalizedUserNames">Find articles to the listed normalized user names.</param>
         /// <returns>
         /// A bad request if the data aren't valid, an ok message if everything was fine or an internal server error if
         /// something went wrong.
@@ -68,13 +68,13 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Query was able to execute.</response>
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
-        [HttpGet("get-by-person-id")]
+        [HttpGet("get-by-normalized-user-name")]
         [ProducesResponseType(typeof(DTO.DictionaryResponse<IList<DTO.Article>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetArticlesByPersonIdAsync([FromQuery]IEnumerable<long> personIds)
+        public async Task<IActionResult> GetArticlesByPersonIdAsync([FromQuery]IEnumerable<string> normalizedUserNames)
         {
-            var articles = await ArticleManager.GetArticlesByPersonIdAsync(personIds);
+            var articles = await ArticleManager.GetArticlesByNormalizedUserNameAsync(normalizedUserNames);
             return Ok(new DTO.DictionaryResponse<IList<DTO.Article>>
             {
                 Success = true,

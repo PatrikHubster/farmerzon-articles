@@ -32,20 +32,21 @@ namespace FarmerzonArticlesManager.Implementation
             return Mapper.Map<IList<DTO.Article>>(articles);
         }
 
-        public async Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByPersonIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByNormalizedUserNameAsync(
+            IEnumerable<string> normalizedUserNames)
         {
-            var people =
-                await PersonRepository.GetEntitiesByIdAsync(ids, new List<string> {nameof(DAO.Person.Articles)});
+            var people = await PersonRepository.GetEntitiesByNormalizedUserNameAsync(normalizedUserNames,
+                new List<string> {nameof(DAO.Person.Articles)});
 
             var articlesForPeople = new Dictionary<string, IList<DTO.Article>>();
             foreach (var person in people)
             {
-                if (!articlesForPeople.ContainsKey(person.PersonId.ToString()) && person.Articles.Count > 0)
+                if (!articlesForPeople.ContainsKey(person.NormalizedUserName) && person.Articles.Count > 0)
                 {
-                    articlesForPeople.Add(person.PersonId.ToString(), new List<DTO.Article>());
+                    articlesForPeople.Add(person.NormalizedUserName, new List<DTO.Article>());
                     foreach (var article in person.Articles)
                     {
-                        articlesForPeople[person.PersonId.ToString()].Add(Mapper.Map<DTO.Article>(article));
+                        articlesForPeople[person.NormalizedUserName].Add(Mapper.Map<DTO.Article>(article));
                     }
                 }
             }

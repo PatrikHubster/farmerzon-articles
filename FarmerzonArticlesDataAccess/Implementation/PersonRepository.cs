@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using FarmerzonArticlesDataAccess.Interface;
@@ -13,7 +14,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
         {
             // nothing to do here
         }
-        
+
         public async Task<IList<Person>> GetEntitiesAsync(long? id, string userName, string normalizedUserName)
         {
             return await Context.People
@@ -28,6 +29,14 @@ namespace FarmerzonArticlesDataAccess.Implementation
             return await Context.People
                 .IncludeMany(includes)
                 .Where(p => ids.Contains(p.PersonId))
+                .ToListAsync();
+        }
+
+        public async Task<IList<Person>> GetEntitiesByNormalizedUserNameAsync(IEnumerable<string> normalizedUserNames, IEnumerable<string> includes)
+        {
+            return await Context.People
+                .IncludeMany(includes)
+                .Where(p => normalizedUserNames.Contains(p.NormalizedUserName))
                 .ToListAsync();
         }
     }
