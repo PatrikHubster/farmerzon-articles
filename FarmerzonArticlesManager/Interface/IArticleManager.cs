@@ -8,10 +8,12 @@ namespace FarmerzonArticlesManager.Interface
 {
     public interface IArticleManager
     {
-        public Task<IList<DTO.Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
+        public Task<IList<DTO.ArticleResponse>> GetEntitiesAsync(long? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt);
-        public Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByNormalizedUserNameAsync(
+        public Task<IDictionary<string, IList<DTO.ArticleResponse>>> GetArticlesByNormalizedUserNameAsync(
             IEnumerable<string> normalizedUserNames);
-        public Task<IDictionary<string, IList<DTO.Article>>> GetArticlesByUnitIdAsync(IEnumerable<long> ids);
+        public Task<IDictionary<string, IList<DTO.ArticleResponse>>> GetArticlesByUnitIdAsync(IEnumerable<long> ids);
+        public Task<DTO.ArticleResponse> AddArticle(DTO.ArticleInput articleInput, string normalizedUserName,
+            string userName);
     }
 }

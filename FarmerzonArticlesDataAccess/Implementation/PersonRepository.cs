@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using FarmerzonArticlesDataAccess.Interface;
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
-    public class PersonRepository : AbstractRepository, IPersonRepository
+    public class PersonRepository : AbstractRepository<Person>, IPersonRepository
     {
         public PersonRepository(FarmerzonArticlesContext context) : base(context)
         {
@@ -24,20 +23,20 @@ namespace FarmerzonArticlesDataAccess.Implementation
                 .ToListAsync();
         }
 
-        public async Task<IList<Person>> GetEntitiesByIdAsync(IEnumerable<long> ids, IEnumerable<string> includes)
-        {
-            return await Context.People
-                .IncludeMany(includes)
-                .Where(p => ids.Contains(p.PersonId))
-                .ToListAsync();
-        }
-
-        public async Task<IList<Person>> GetEntitiesByNormalizedUserNameAsync(IEnumerable<string> normalizedUserNames, IEnumerable<string> includes)
+        public async Task<IList<Person>> GetEntitiesByNormalizedUserNameAsync(IEnumerable<string> normalizedUserNames, 
+            IEnumerable<string> includes)
         {
             return await Context.People
                 .IncludeMany(includes)
                 .Where(p => normalizedUserNames.Contains(p.NormalizedUserName))
                 .ToListAsync();
+        }
+
+        public async Task<Person> GetOrAddEntityAsync(Person person)
+        {
+            var managedPerson = (await GetEntitiesAsync(null, person.UserName, person.NormalizedUserName))
+                .FirstOrDefault();
+            return managedPerson ?? await AddOrUpdateEntityAsync(person);
         }
     }
 }

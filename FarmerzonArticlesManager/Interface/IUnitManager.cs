@@ -7,7 +7,7 @@ namespace FarmerzonArticlesManager.Interface
 {
     public interface IUnitManager
     {
-        public Task<IList<DTO.Unit>> GetEntitiesAsync(long? id, string name);
-        public Task<IDictionary<string, DTO.Unit>> GetUnitsByArticleIdAsync(IEnumerable<long> ids);
+        public Task<IList<DTO.UnitResponse>> GetEntitiesAsync(long? id, string name);
+        public Task<IDictionary<string, DTO.UnitResponse>> GetUnitsByArticleIdAsync(IEnumerable<long> ids);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FarmerzonArticlesManager.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -41,7 +42,7 @@ namespace FarmerzonArticles.Controllers
         /// <response code="400">One or more optional parameters were not valid.</response>
         /// <response code="500">Something unexpected happened.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(DTO.ListResponse<DTO.Article>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IList<DTO.ArticleResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPeopleAsync([FromQuery]long? articleId, [FromQuery]string name,
@@ -50,7 +51,7 @@ namespace FarmerzonArticles.Controllers
         {
             var articles = await ArticleManager.GetEntitiesAsync(articleId, name, description, price, 
                 amount, size, createdAt, updatedAt);
-            return Ok(new DTO.ListResponse<DTO.Article>
+            return Ok(new DTO.SuccessResponse<IList<DTO.ArticleResponse>>
             {
                 Success = true,
                 Content = articles
@@ -69,13 +70,13 @@ namespace FarmerzonArticles.Controllers
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
         [HttpGet("get-by-normalized-user-name")]
-        [ProducesResponseType(typeof(DTO.DictionaryResponse<IList<DTO.Article>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetArticlesByPersonIdAsync([FromQuery]IEnumerable<string> normalizedUserNames)
         {
             var articles = await ArticleManager.GetArticlesByNormalizedUserNameAsync(normalizedUserNames);
-            return Ok(new DTO.DictionaryResponse<IList<DTO.Article>>
+            return Ok(new DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>
             {
                 Success = true,
                 Content = articles
@@ -94,17 +95,45 @@ namespace FarmerzonArticles.Controllers
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
         [HttpGet("get-by-unit-id")]
-        [ProducesResponseType(typeof(DTO.DictionaryResponse<IList<DTO.Article>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetArticlesByUnitIdAsync([FromQuery]IEnumerable<long> unitIds)
         {
             var articles = await ArticleManager.GetArticlesByUnitIdAsync(unitIds);
-            return Ok(new DTO.DictionaryResponse<IList<DTO.Article>>
+            return Ok(new DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>
             {
                 Success = true,
                 Content = articles
             });
-        } 
+        }
+
+        /// <summary>
+        /// Posts a single article for a person.
+        /// </summary>
+        /// <param name="articleInput">New article to insert into database.</param>
+        /// <returns>
+        /// A bad request if the data aren't valid, an ok message if everything was fine or an internal server error if
+        /// something went wrong.
+        /// </returns>
+        /// <response code="200">Post was able to execute.</response>
+        /// <response code="400">Article was invalid.</response>
+        /// <response code="500">Something unexpected happened.</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<DTO.ArticleResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AddArticle([FromBody] DTO.ArticleInput articleInput)
+        {
+            var normalizedUserName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userName = User.FindFirst("userName")?.Value;
+
+            var articleResponse = await ArticleManager.AddArticle(articleInput, normalizedUserName, userName);   
+            return Ok(new DTO.SuccessResponse<DTO.ArticleResponse>
+            {
+                Success = true,
+                Content = articleResponse
+            });
+        }
     }
 }

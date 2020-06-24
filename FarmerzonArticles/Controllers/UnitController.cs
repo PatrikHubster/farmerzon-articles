@@ -34,13 +34,13 @@ namespace FarmerzonArticles.Controllers
         /// <response code="400">UnitId or Name was not valid.</response>
         /// <response code="500">Something unexpected happened.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(DTO.ListResponse<DTO.Unit>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IList<DTO.UnitResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUnitsAsync([FromQuery]long? unitId, [FromQuery]string name)
         {
             var units = await UnitManager.GetEntitiesAsync(unitId, name);
-            return Ok(new DTO.ListResponse<DTO.Unit>
+            return Ok(new DTO.SuccessResponse<IList<DTO.UnitResponse>>
             {
                 Success = true,
                 Content = units
@@ -59,17 +59,17 @@ namespace FarmerzonArticles.Controllers
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
         [HttpGet("get-by-article-id")]
-        [ProducesResponseType(typeof(DTO.DictionaryResponse<DTO.Unit>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, DTO.UnitResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUnitsByArticleIdAsync([FromQuery]IEnumerable<long> articleIds)
         {
             var units = await UnitManager.GetUnitsByArticleIdAsync(articleIds);
-            return Ok(new DTO.DictionaryResponse<DTO.Unit>
+            return Ok(new DTO.SuccessResponse<IDictionary<string, DTO.UnitResponse>>
             {
                 Success = true,
                 Content = units
             });
-        } 
+        }
     }
 }

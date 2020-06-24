@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
-    public class UnitRepository : AbstractRepository, IUnitRepository
+    public class UnitRepository : AbstractRepository<Unit>, IUnitRepository
     {
         public UnitRepository(FarmerzonArticlesContext context) : base(context)
         {
             // nothing to do here
         }
-        
+
         public async Task<IList<Unit>> GetEntitiesAsync(long? id, string name)
         {
             return await Context.Units
@@ -28,6 +28,12 @@ namespace FarmerzonArticlesDataAccess.Implementation
                 .IncludeMany(includes)
                 .Where(u => ids.Contains(u.UnitId))
                 .ToListAsync();
+        }
+
+        public async Task<Unit> GetOrAddEntityAsync(Unit unit)
+        {
+            var managedUnit = (await GetEntitiesAsync(null, unit.Name)).FirstOrDefault();
+            return managedUnit ?? await AddOrUpdateEntityAsync(unit);
         }
     }
 }

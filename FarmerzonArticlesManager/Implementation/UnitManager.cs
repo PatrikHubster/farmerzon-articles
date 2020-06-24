@@ -22,18 +22,18 @@ namespace FarmerzonArticlesManager.Implementation
             UnitRepository = unitRepository;
         }
 
-        public async Task<IList<DTO.Unit>> GetEntitiesAsync(long? id, string name)
+        public async Task<IList<DTO.UnitResponse>> GetEntitiesAsync(long? id, string name)
         {
             var units = await UnitRepository.GetEntitiesAsync(id, name);
-            return Mapper.Map<IList<DTO.Unit>>(units);
+            return Mapper.Map<IList<DTO.UnitResponse>>(units);
         }
 
-        public async Task<IDictionary<string, DTO.Unit>> GetUnitsByArticleIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, DTO.UnitResponse>> GetUnitsByArticleIdAsync(IEnumerable<long> ids)
         {
             var articles = 
                 await ArticleRepository.GetEntitiesByIdAsync(ids, new List<string> {nameof(DAO.Article.Unit)});
             return articles.ToDictionary(key => key.ArticleId.ToString(), 
-                value => Mapper.Map<DTO.Unit>(value.Unit));
+                value => Mapper.Map<DTO.UnitResponse>(value.Unit));
         }
     }
 }

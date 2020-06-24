@@ -2,12 +2,10 @@ using System;
 
 namespace FarmerzonArticlesDataTransferModel
 {
-    public class Article
+    public class ArticleResponse
     {
-        // primary key
         public long ArticleId { get; set; }
 
-        // attributes
         public string Name { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }

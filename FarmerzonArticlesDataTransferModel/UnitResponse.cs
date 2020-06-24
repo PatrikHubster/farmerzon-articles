@@ -2,12 +2,10 @@ using System.Collections.Generic;
 
 namespace FarmerzonArticlesDataTransferModel
 {
-    public class Unit
+    public class UnitResponse
     {
-        // primary key
         public long UnitId { get; set; }
 
-        // attributes
         public string Name { get; set; }
     }
 }

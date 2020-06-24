@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
-    public class ArticleRepository : AbstractRepository, IArticleRepository
+    public class ArticleRepository : AbstractRepository<Article>, IArticleRepository
     {
         public ArticleRepository(FarmerzonArticlesContext context) : base(context)
         {
             // nothing to do here
         }
-        
+
         public async Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt)
         {
@@ -35,6 +35,21 @@ namespace FarmerzonArticlesDataAccess.Implementation
                 .IncludeMany(includes)
                 .Where(a => ids.Contains(a.ArticleId))
                 .ToListAsync();
+        }
+
+        public new Task<Article> AddOrUpdateEntityAsync(Article entity)
+        {
+            if (entity.Person != null && entity.Person.PersonId != 0)
+            {
+                Context.Attach(entity.Person);
+            }
+
+            if (entity.Unit != null && entity.Unit.UnitId != 0)
+            {
+                Context.Attach(entity.Unit);
+            }
+
+            return base.AddOrUpdateEntityAsync(entity);
         }
     }
 }

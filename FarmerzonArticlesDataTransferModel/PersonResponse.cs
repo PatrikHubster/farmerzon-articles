@@ -1,11 +1,11 @@
-﻿namespace FarmerzonArticlesDataTransferModel
+﻿using System.Collections.Generic;
+
+namespace FarmerzonArticlesDataTransferModel
 {
-    public class Person
+    public class PersonResponse
     {
-        // primary key
         public long PersonId { get; set; }
 
-        // attributes
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }
     }

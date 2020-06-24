@@ -7,7 +7,7 @@ namespace FarmerzonArticlesManager.Interface
 {
     public interface IPersonManager
     {
-        public Task<IList<DTO.Person>> GetEntitiesAsync(long? id, string userName, string normalizedUserName);
-        public Task<IDictionary<string, DTO.Person>> GetPeopleByArticleIdAsync(IEnumerable<long> ids);
+        public Task<IList<DTO.PersonResponse>> GetEntitiesAsync(long? id, string userName, string normalizedUserName);
+        public Task<IDictionary<string, DTO.PersonResponse>> GetPeopleByArticleIdAsync(IEnumerable<long> ids);
     }
 }

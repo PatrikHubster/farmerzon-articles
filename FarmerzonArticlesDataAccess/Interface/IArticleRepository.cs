@@ -5,7 +5,7 @@ using FarmerzonArticlesDataAccessModel;
 
 namespace FarmerzonArticlesDataAccess.Interface
 {
-    public interface IArticleRepository
+    public interface IArticleRepository : IAbstractRepository<Article>
     {
         public Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
             int? amount, double? size, DateTime? createdAt, DateTime? updatedAt);

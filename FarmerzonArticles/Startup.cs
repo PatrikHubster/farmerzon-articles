@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace FarmerzonArticles
 {
@@ -56,6 +57,11 @@ namespace FarmerzonArticles
             // Add a custom model validation like it is described under the following link 
             // https://www.talkingdotnet.com/validate-model-state-automatically-asp-net-core-2-0/
             services.AddMvc(options => { options.Filters.Add(typeof(ValidateModelStateAttribute)); });
+
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            };
 
             services.AddDbContext<FarmerzonArticlesContext>(
                 option => option.UseNpgsql(

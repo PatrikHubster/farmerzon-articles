@@ -35,14 +35,14 @@ namespace FarmerzonArticles.Controllers
         /// <response code="400">PeopleId, userName or normalizedUserName was not valid.</response>
         /// <response code="500">Something unexpected happened.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(DTO.ListResponse<DTO.Person>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IList<DTO.PersonResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPeopleAsync([FromQuery]long? personId, [FromQuery]string userName,
             [FromQuery] string normalizedUserName)
         {
             var people = await PersonManager.GetEntitiesAsync(personId, userName, normalizedUserName);
-            return Ok(new DTO.ListResponse<DTO.Person>
+            return Ok(new DTO.SuccessResponse<IList<DTO.PersonResponse>>
             {
                 Success = true,
                 Content = people
@@ -61,13 +61,13 @@ namespace FarmerzonArticles.Controllers
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
         [HttpGet("get-by-article-id")]
-        [ProducesResponseType(typeof(DTO.DictionaryResponse<DTO.Person>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, DTO.PersonResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPeopleByArticleIdAsync([FromQuery]IEnumerable<long> articleIds)
         {
             var people = await PersonManager.GetPeopleByArticleIdAsync(articleIds);
-            return Ok(new DTO.DictionaryResponse<DTO.Person>
+            return Ok(new DTO.SuccessResponse<IDictionary<string, DTO.PersonResponse>>
             {
                 Success = true,
                 Content = people
