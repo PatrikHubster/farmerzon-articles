@@ -8,7 +8,8 @@ namespace FarmerzonArticlesDataAccess.Interface
     public interface IArticleRepository : IAbstractRepository<Article>
     {
         public Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
-            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt);
+            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, DateTime? expirationDate);
         public Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IEnumerable<string> includes);
+        public Task<IList<Article>> GetArticlesByExpirationDate(int amount);
     }
 }

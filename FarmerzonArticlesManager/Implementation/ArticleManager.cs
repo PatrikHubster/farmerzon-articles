@@ -26,11 +26,10 @@ namespace FarmerzonArticlesManager.Implementation
         }
 
         public async Task<IList<DTO.ArticleResponse>> GetEntitiesAsync(long? id, string name, string description,
-            double? price,
-            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt)
+            double? price, int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, DateTime? expirationDate)
         {
             var articles = await ArticleRepository.GetEntitiesAsync(id, name, description, price,
-                amount, size, createdAt, updatedAt);
+                amount, size, createdAt, updatedAt, expirationDate);
             return Mapper.Map<IList<DTO.ArticleResponse>>(articles);
         }
 
@@ -112,6 +111,12 @@ namespace FarmerzonArticlesManager.Implementation
             });
             
             return Mapper.Map<DTO.ArticleResponse>(managedArticle);
+        }
+
+        public async Task<IList<DTO.ArticleResponse>> GetArticlesByExpirationDate(int amount)
+        {
+            var articles = await ArticleRepository.GetArticlesByExpirationDate(amount);
+            return Mapper.Map<IList<DTO.ArticleResponse>>(articles);
         }
     }
 }

@@ -19,5 +19,6 @@ namespace FarmerzonArticlesDataAccessModel
         public double Size { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime ExpirationDate { get; set; }
     }
 }

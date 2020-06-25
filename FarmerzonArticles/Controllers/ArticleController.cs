@@ -11,7 +11,6 @@ using DTO = FarmerzonArticlesDataTransferModel;
 
 namespace FarmerzonArticles.Controllers
 {
-    [Authorize]
     [Route("article")]
     [ApiController]
     public class ArticleController : ControllerBase
@@ -34,6 +33,7 @@ namespace FarmerzonArticles.Controllers
         /// <param name="size">Optional parameter for querying for articles.</param>
         /// <param name="createdAt">Optional parameter for querying for articles.</param>
         /// <param name="updatedAt">Optional parameter for querying for articles.</param>
+        /// <param name="expirationDate">Optional parameter for querying for articles.</param>
         /// <returns>
         /// A bad request if the data aren't valid, an ok message if everything was fine or an internal server error if
         /// something went wrong.
@@ -41,16 +41,17 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Query was able to execute.</response>
         /// <response code="400">One or more optional parameters were not valid.</response>
         /// <response code="500">Something unexpected happened.</response>
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IList<DTO.ArticleResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPeopleAsync([FromQuery]long? articleId, [FromQuery]string name,
             [FromQuery]string description, [FromQuery]double? price, [FromQuery]int? amount, [FromQuery]double? size,
-            [FromQuery]DateTime? createdAt, [FromQuery]DateTime? updatedAt)
+            [FromQuery]DateTime? createdAt, [FromQuery]DateTime? updatedAt, [FromQuery]DateTime? expirationDate)
         {
             var articles = await ArticleManager.GetEntitiesAsync(articleId, name, description, price, 
-                amount, size, createdAt, updatedAt);
+                amount, size, createdAt, updatedAt, expirationDate);
             return Ok(new DTO.SuccessResponse<IList<DTO.ArticleResponse>>
             {
                 Success = true,
@@ -69,6 +70,7 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Query was able to execute.</response>
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
+        [Authorize]
         [HttpGet("get-by-normalized-user-name")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -94,6 +96,7 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Query was able to execute.</response>
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
+        [Authorize]
         [HttpGet("get-by-unit-id")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -102,6 +105,31 @@ namespace FarmerzonArticles.Controllers
         {
             var articles = await ArticleManager.GetArticlesByUnitIdAsync(unitIds);
             return Ok(new DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>
+            {
+                Success = true,
+                Content = articles
+            });
+        }
+        
+        /// <summary>
+        /// Request a list of articles.
+        /// </summary>
+        /// <param name="amount">Find a specific amount of articles which expire soon.</param>
+        /// <returns>
+        /// A bad request if the data aren't valid, an ok message if everything was fine or an internal server error if
+        /// something went wrong.
+        /// </returns>
+        /// <response code="200">Query was able to execute.</response>
+        /// <response code="400">Article ids were invalid.</response>
+        /// <response code="500">Something unexpected happened.</response>
+        [HttpGet("get-by-expiration-date")]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetArticlesByExpirationDate([FromQuery]int amount)
+        {
+            var articles = await ArticleManager.GetArticlesByExpirationDate(amount);
+            return Ok(new DTO.SuccessResponse<IList<DTO.ArticleResponse>>
             {
                 Success = true,
                 Content = articles
@@ -119,6 +147,7 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Post was able to execute.</response>
         /// <response code="400">Article was invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(DTO.SuccessResponse<DTO.ArticleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]

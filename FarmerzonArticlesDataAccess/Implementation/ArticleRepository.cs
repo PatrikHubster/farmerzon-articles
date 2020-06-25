@@ -16,7 +16,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
         }
 
         public async Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
-            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt)
+            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, DateTime? expirationDate)
         {
             return await Context.Articles
                 .Where(a => id == null || a.ArticleId == id)
@@ -26,6 +26,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
                 .Where(a => size == null || a.Size == size)
                 .Where(a => createdAt == null || a.CreatedAt == createdAt)
                 .Where(a => updatedAt == null || a.UpdatedAt == updatedAt)
+                .Where(a => expirationDate == null || a.ExpirationDate == expirationDate)
                 .ToListAsync();
         }
 
@@ -50,6 +51,15 @@ namespace FarmerzonArticlesDataAccess.Implementation
             }
 
             return base.AddOrUpdateEntityAsync(entity);
+        }
+
+        public async Task<IList<Article>> GetArticlesByExpirationDate(int amount)
+        {
+            return await Context.Articles
+                .Include(a => a.Unit)
+                .OrderBy(a => a.ExpirationDate)
+                .Take(amount)
+                .ToListAsync();
         }
     }
 }

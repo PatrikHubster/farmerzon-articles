@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace FarmerzonArticlesDataTransferModel
@@ -17,5 +18,7 @@ namespace FarmerzonArticlesDataTransferModel
         public int? Amount { get; set; }
         [Required(ErrorMessage = "The size of the article is missing.")]
         public double? Size { get; set; }
+        [Required(ErrorMessage = "The expiration date of the article is missing.")]
+        public DateTime ExpirationDate { get; set; }
     }
 }
