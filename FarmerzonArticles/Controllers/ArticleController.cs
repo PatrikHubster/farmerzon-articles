@@ -11,6 +11,7 @@ using DTO = FarmerzonArticlesDataTransferModel;
 
 namespace FarmerzonArticles.Controllers
 {
+    [Authorize]
     [Route("article")]
     [ApiController]
     public class ArticleController : ControllerBase
@@ -41,7 +42,6 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Query was able to execute.</response>
         /// <response code="400">One or more optional parameters were not valid.</response>
         /// <response code="500">Something unexpected happened.</response>
-        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IList<DTO.ArticleResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -70,7 +70,6 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Query was able to execute.</response>
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
-        [Authorize]
         [HttpGet("get-by-normalized-user-name")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -96,7 +95,6 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Query was able to execute.</response>
         /// <response code="400">Article ids were invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
-        [Authorize]
         [HttpGet("get-by-unit-id")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IList<DTO.ArticleResponse>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -147,7 +145,6 @@ namespace FarmerzonArticles.Controllers
         /// <response code="200">Post was able to execute.</response>
         /// <response code="400">Article was invalid.</response>
         /// <response code="500">Something unexpected happened.</response>
-        [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(DTO.SuccessResponse<DTO.ArticleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
