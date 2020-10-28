@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FarmerzonArticlesDataAccess.Interface;
@@ -12,28 +11,47 @@ namespace FarmerzonArticlesManager.Implementation
 {
     public class UnitManager : AbstractManager, IUnitManager
     {
-        private IArticleRepository ArticleRepository { get; set; }
         private IUnitRepository UnitRepository { get; set; }
 
-        public UnitManager(IMapper mapper, IArticleRepository articleRepository,
-            IUnitRepository unitRepository) : base(mapper)
+        public UnitManager(ITransactionHandler transactionHandler, IMapper mapper, 
+            IUnitRepository unitRepository) : base(transactionHandler, mapper)
         {
-            ArticleRepository = articleRepository;
             UnitRepository = unitRepository;
         }
 
-        public async Task<IList<DTO.UnitResponse>> GetEntitiesAsync(long? id, string name)
+        public Task<DTO.UnitOutput> InsertEntityAsync(DTO.UnitInput entity)
         {
-            var units = await UnitRepository.GetEntitiesAsync(id, name);
-            return Mapper.Map<IList<DTO.UnitResponse>>(units);
+            throw new System.NotImplementedException();
         }
 
-        public async Task<IDictionary<string, DTO.UnitResponse>> GetUnitsByArticleIdAsync(IEnumerable<long> ids)
+        public Task<DTO.UnitOutput> UpdateEntityAsync(long id, DTO.UnitInput entity)
         {
-            var articles = 
-                await ArticleRepository.GetEntitiesByIdAsync(ids, new List<string> {nameof(DAO.Article.Unit)});
-            return articles.ToDictionary(key => key.ArticleId.ToString(), 
-                value => Mapper.Map<DTO.UnitResponse>(value.Unit));
+            throw new System.NotImplementedException();
+        }
+
+        public Task<DTO.UnitOutput> RemoveEntityByIdAsync(long id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IEnumerable<DTO.UnitOutput>> GetEntitiesByIdAsync(IEnumerable<long> ids)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<DTO.UnitOutput> GetEntityByIdAsync(long id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IEnumerable<DTO.UnitOutput>> GetEntitiesAsync(long? id = null, string name = null)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IDictionary<string, DTO.UnitOutput>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

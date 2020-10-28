@@ -1,10 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace FarmerzonArticlesDataTransferModel
 {
-    public class UnitInput
+    public class UnitOutput : BaseModelOutput
     {
-        [Required]
         public string Name { get; set; }
     }
 }

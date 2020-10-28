@@ -2,10 +2,8 @@ using System;
 
 namespace FarmerzonArticlesDataTransferModel
 {
-    public class ArticleResponse
+    public class ArticleOutput : BaseModelOutput
     {
-        public long ArticleId { get; set; }
-
         public string Name { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }

@@ -8,13 +8,19 @@ namespace FarmerzonArticlesManager.Interface
 {
     public interface IArticleManager
     {
-        public Task<IList<DTO.ArticleResponse>> GetEntitiesAsync(long? id, string name, string description, double? price, 
-            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, DateTime? expirationDate);
-        public Task<IDictionary<string, IList<DTO.ArticleResponse>>> GetArticlesByNormalizedUserNameAsync(
+        public Task<DTO.ArticleOutput> InsertEntityAsync(DTO.ArticleInput entity, string userName,
+            string normalizedUserName);
+        public Task<IEnumerable<DTO.ArticleOutput>> GetEntitiesAsync(long? id = null, string name = null, 
+            string description = null, double? price = null, int? amount = null, double? size = null, 
+            DateTime? createdAt = null, DateTime? updatedAt = null, DateTime? expirationDate = null);
+        public Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByNormalizedUserNameAsync(
             IEnumerable<string> normalizedUserNames);
-        public Task<IDictionary<string, IList<DTO.ArticleResponse>>> GetArticlesByUnitIdAsync(IEnumerable<long> ids);
-        public Task<DTO.ArticleResponse> AddArticle(DTO.ArticleInput articleInput, string normalizedUserName,
-            string userName);
-        public Task<IList<DTO.ArticleResponse>> GetArticlesByExpirationDate(int amount);
+        public Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids);
+        public Task<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByExpirationDateAsync(int amount);
+        public Task<DTO.ArticleOutput> UpdateEntityAsync(long id, DTO.ArticleInput entity, string userName, 
+            string normalizedUserName);
+        public Task<DTO.ArticleOutput> RemoveEntityByIdAsync(long id, string userName, string normalizedUserName);
+        public Task<IEnumerable<DTO.ArticleOutput>> GetEntitiesByIdAsync(IEnumerable<long> ids);
+        public Task<DTO.ArticleOutput> GetEntityByIdAsync(long id);
     }
 }

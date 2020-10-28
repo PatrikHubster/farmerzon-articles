@@ -20,55 +20,75 @@ namespace FarmerzonArticles.Controllers
         {
             UnitManager = unitManager;
         }
-        
-        /// <summary>
-        /// Request a list of units.
-        /// </summary>
-        /// <param name="unitId">Optional parameter for querying for units.</param>
-        /// <param name="name">Optional parameter for querying for units.</param>
-        /// <returns>
-        /// A bad request if the data aren't valid, an ok message if everything was fine or an internal server error if
-        /// something went wrong.
-        /// </returns>
-        /// <response code="200">Query was able to execute.</response>
-        /// <response code="400">UnitId or Name was not valid.</response>
-        /// <response code="500">Something unexpected happened.</response>
-        [HttpGet]
-        [ProducesResponseType(typeof(DTO.SuccessResponse<IList<DTO.UnitResponse>>), StatusCodes.Status200OK)]
+
+        [HttpPost]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<DTO.UnitOutput>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUnitsAsync([FromQuery]long? unitId, [FromQuery]string name)
+        public async Task<IActionResult> PostUnitAsync([FromBody] DTO.UnitInput unit)
+        {
+            var insertedUnit = await UnitManager.InsertEntityAsync(unit);
+            return Ok(new DTO.SuccessResponse<DTO.UnitOutput>
+            {
+                Success = true,
+                Content = insertedUnit
+            });
+        }
+        
+        [HttpGet]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IEnumerable<DTO.UnitOutput>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUnitsAsync([FromQuery] long? unitId, [FromQuery] string name)
         {
             var units = await UnitManager.GetEntitiesAsync(unitId, name);
-            return Ok(new DTO.SuccessResponse<IList<DTO.UnitResponse>>
+            return Ok(new DTO.SuccessResponse<IEnumerable<DTO.UnitOutput>>
             {
                 Success = true,
                 Content = units
             });
-        } 
-        
-        /// <summary>
-        /// Request a list of units.
-        /// </summary>
-        /// <param name="articleIds">Find units to the listed article ids.</param>
-        /// <returns>
-        /// A bad request if the data aren't valid, an ok message if everything was fine or an internal server error if
-        /// something went wrong.
-        /// </returns>
-        /// <response code="200">Query was able to execute.</response>
-        /// <response code="400">Article ids were invalid.</response>
-        /// <response code="500">Something unexpected happened.</response>
+        }
+
         [HttpGet("get-by-article-id")]
-        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, DTO.UnitResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, DTO.UnitOutput>>),
+            StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUnitsByArticleIdAsync([FromQuery]IEnumerable<long> articleIds)
+        public async Task<IActionResult> GetUnitsByArticleIdAsync([FromQuery] IEnumerable<long> articleIds)
         {
-            var units = await UnitManager.GetUnitsByArticleIdAsync(articleIds);
-            return Ok(new DTO.SuccessResponse<IDictionary<string, DTO.UnitResponse>>
+            var units = await UnitManager.GetEntitiesByArticleIdAsync(articleIds);
+            return Ok(new DTO.SuccessResponse<IDictionary<string, DTO.UnitOutput>>
             {
                 Success = true,
                 Content = units
+            });
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<DTO.UnitOutput>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateUnitAsync([FromQuery] long unitId, [FromBody] DTO.UnitInput unit)
+        {
+            var updatedUnit = await UnitManager.UpdateEntityAsync(unitId, unit);
+            return Ok(new DTO.SuccessResponse<DTO.UnitOutput>
+            {
+                Success = true,
+                Content = updatedUnit
+            });
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(typeof(DTO.SuccessResponse<DTO.UnitOutput>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteUnitAsync([FromQuery] long unitId)
+        {
+            var deletedUnit = await UnitManager.RemoveEntityByIdAsync(unitId);
+            return Ok(new DTO.SuccessResponse<DTO.UnitOutput>
+            {
+                Success = true,
+                Content = deletedUnit
             });
         }
     }

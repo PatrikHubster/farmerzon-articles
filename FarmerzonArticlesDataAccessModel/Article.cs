@@ -2,11 +2,8 @@ using System;
 
 namespace FarmerzonArticlesDataAccessModel
 {
-    public class Article
+    public class Article : BaseModel
     {
-        // primary key
-        public long ArticleId { get; set; }
-
         // relationships
         public Person Person { get; set; }
         public Unit Unit { get; set; }

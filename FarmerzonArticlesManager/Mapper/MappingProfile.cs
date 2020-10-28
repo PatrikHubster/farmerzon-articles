@@ -10,16 +10,16 @@ namespace FarmerzonArticlesManager.Mapper
         public MappingProfile()
         {
             // Article
-            CreateMap<DAO.Article, DTO.ArticleResponse>();
-            CreateMap<DTO.ArticleResponse, DAO.Article>();
+            CreateMap<DAO.Article, DTO.ArticleOutput>();
+            CreateMap<DTO.ArticleOutput, DAO.Article>();
 
             // Person
-            CreateMap<DAO.Person, DTO.PersonResponse>();
-            CreateMap<DTO.PersonResponse, DAO.Person>();
+            CreateMap<DAO.Person, DTO.PersonOutput>();
+            CreateMap<DTO.PersonOutput, DAO.Person>();
 
             // Unit
-            CreateMap<DAO.Unit, DTO.UnitResponse>();
-            CreateMap<DTO.UnitResponse, DAO.Unit>();
+            CreateMap<DAO.Unit, DTO.UnitOutput>();
+            CreateMap<DTO.UnitOutput, DAO.Unit>();
         }
     }
 }

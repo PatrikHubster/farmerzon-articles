@@ -2,11 +2,8 @@ using System.Collections.Generic;
 
 namespace FarmerzonArticlesDataAccessModel
 {
-    public class Unit
+    public class Unit : BaseModel
     {
-        // primary key
-        public long UnitId { get; set; }
-        
         // relationships
         public virtual IList<Article> Articles { get; set; }
         

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using AutoMapper;
 using FarmerzonArticles.Helper;
 using FarmerzonArticlesDataAccess;
@@ -21,7 +22,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 
 namespace FarmerzonArticles
 {
@@ -41,13 +41,12 @@ namespace FarmerzonArticles
         // ?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(c => 
+            services.AddControllers().AddDapr();
+            
+            services.AddSingleton(new JsonSerializerOptions
             {
-                c.AddPolicy(allowOrigins,
-                    options =>
-                    {
-                        options.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
-                    });
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
             });
             
             // Disable default model validation like it is described under the following link
@@ -58,16 +57,10 @@ namespace FarmerzonArticles
             // https://www.talkingdotnet.com/validate-model-state-automatically-asp-net-core-2-0/
             services.AddMvc(options => { options.Filters.Add(typeof(ValidateModelStateAttribute)); });
 
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            };
-
             services.AddDbContext<FarmerzonArticlesContext>(
                 option => option.UseNpgsql(
                     Configuration.GetConnectionString("FarmerzonArticles"),
-                    x => x.MigrationsAssembly(nameof(FarmerzonArticles))),
-                ServiceLifetime.Transient);
+                    x => x.MigrationsAssembly(nameof(FarmerzonArticles))));
             
             services.AddAuthentication(options =>
             {
@@ -94,19 +87,20 @@ namespace FarmerzonArticles
             services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
 
             // repositories DI container
-            services.AddTransient<IArticleRepository, ArticleRepository>();
-            services.AddTransient<IPersonRepository, PersonRepository>();
-            services.AddTransient<IUnitRepository, UnitRepository>();
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IUnitRepository, UnitRepository>();
+            services.AddScoped<ITransactionHandler, TransactionHandler>();
             
             // manager DI container
-            services.AddTransient<IArticleManager, ArticleManager>();
-            services.AddTransient<IPersonManager, PersonManager>();
-            services.AddTransient<IUnitManager, UnitManager>();
+            services.AddScoped<IArticleManager, ArticleManager>();
+            services.AddScoped<IPersonManager, PersonManager>();
+            services.AddScoped<IUnitManager, UnitManager>();
             
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Authentication API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Farmerzon Articles API", Version = "v1"});
 
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -163,7 +157,7 @@ namespace FarmerzonArticles
             }
 
             app.UseRouting();
-            app.UseCors(allowOrigins);
+            app.UseCloudEvents();
 
             // It is important to use app.UseAuthentication(); before app.UseAuthorization();
             // Otherwise authentication with json web tokens doesn't work.
@@ -172,9 +166,8 @@ namespace FarmerzonArticles
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapSubscribeHandler();
+                endpoints.MapControllers();
             });
             
             context.Database.Migrate();

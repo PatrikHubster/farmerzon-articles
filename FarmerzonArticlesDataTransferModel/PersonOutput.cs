@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace FarmerzonArticlesDataTransferModel
+﻿namespace FarmerzonArticlesDataTransferModel
 {
-    public class PersonResponse
+    public class PersonOutput : BaseModelOutput
     {
         public long PersonId { get; set; }
 

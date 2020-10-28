@@ -1,65 +1,36 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FarmerzonArticlesDataAccess.Interface;
 using FarmerzonArticlesDataAccessModel;
-using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
-    public class ArticleRepository : AbstractRepository<Article>, IArticleRepository
+    public class ArticleRepository : GenericRepository<Article>, IArticleRepository
     {
         public ArticleRepository(FarmerzonArticlesContext context) : base(context)
         {
             // nothing to do here
         }
 
-        public async Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
-            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, DateTime? expirationDate)
+        protected override Task<Article> GetEntityAsync(Article entity)
         {
-            return await Context.Articles
-                .Where(a => id == null || a.ArticleId == id)
-                .Where(a => name == null || a.Name == name)
-                .Where(a => description == null || a.Description == description)
-                .Where(a => price == null || a.Price == price)
-                .Where(a => size == null || a.Size == size)
-                .Where(a => createdAt == null || a.CreatedAt == createdAt)
-                .Where(a => updatedAt == null || a.UpdatedAt == updatedAt)
-                .Where(a => expirationDate == null || a.ExpirationDate == expirationDate)
-                .ToListAsync();
+            throw new NotImplementedException();
         }
 
-        public async Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IEnumerable<string> includes)
+        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByNormalizedUserNameAsync(IEnumerable<string> normalizedUserNames)
         {
-            return await Context.Articles
-                .IncludeMany(includes)
-                .Where(a => ids.Contains(a.ArticleId))
-                .ToListAsync();
+            throw new NotImplementedException();
         }
 
-        public new Task<Article> AddOrUpdateEntityAsync(Article entity)
+        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids)
         {
-            if (entity.Person != null && entity.Person.PersonId != 0)
-            {
-                Context.Attach(entity.Person);
-            }
-
-            if (entity.Unit != null && entity.Unit.UnitId != 0)
-            {
-                Context.Attach(entity.Unit);
-            }
-
-            return base.AddOrUpdateEntityAsync(entity);
+            throw new NotImplementedException();
         }
 
-        public async Task<IList<Article>> GetArticlesByExpirationDate(int amount)
+        public Task<IEnumerable<IDictionary<DateTime, Article>>> GetEntitiesByExpirationDateAsync(int amount)
         {
-            return await Context.Articles
-                .Include(a => a.Unit)
-                .OrderBy(a => a.ExpirationDate)
-                .Take(amount)
-                .ToListAsync();
+            throw new NotImplementedException();
         }
     }
 }

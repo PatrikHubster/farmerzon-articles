@@ -5,11 +5,11 @@ using FarmerzonArticlesDataAccessModel;
 
 namespace FarmerzonArticlesDataAccess.Interface
 {
-    public interface IArticleRepository : IAbstractRepository<Article>
+    public interface IArticleRepository : IBasicRepository<Article>
     {
-        public Task<IList<Article>> GetEntitiesAsync(long? id, string name, string description, double? price, 
-            int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, DateTime? expirationDate);
-        public Task<IList<Article>> GetEntitiesByIdAsync(IEnumerable<long> ids, IEnumerable<string> includes);
-        public Task<IList<Article>> GetArticlesByExpirationDate(int amount);
+        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByNormalizedUserNameAsync(
+            IEnumerable<string> normalizedUserNames);
+        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids);
+        public Task<IEnumerable<IDictionary<DateTime, Article>>> GetEntitiesByExpirationDateAsync(int amount);
     }
 }

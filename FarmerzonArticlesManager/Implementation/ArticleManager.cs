@@ -5,7 +5,6 @@ using AutoMapper;
 using FarmerzonArticlesDataAccess.Interface;
 using FarmerzonArticlesErrorHandling.CustomException;
 using FarmerzonArticlesManager.Interface;
-
 using DAO = FarmerzonArticlesDataAccessModel;
 using DTO = FarmerzonArticlesDataTransferModel;
 
@@ -13,110 +12,193 @@ namespace FarmerzonArticlesManager.Implementation
 {
     public class ArticleManager : AbstractManager, IArticleManager
     {
-        private IArticleRepository ArticleRepository { get; set; }
+        private const string OperationNotAllowed = "This address does not exist or is not accessible for this user.";
+
+        private static readonly IList<string> Includes = new List<string>
+        {
+            nameof(DAO.Article.Unit),
+            nameof(DAO.Article.Person)
+        };
+
         private IPersonRepository PersonRepository { get; set; }
         private IUnitRepository UnitRepository { get; set; }
+        private IArticleRepository ArticleRepository { get; set; }
 
-        public ArticleManager(IMapper mapper, IArticleRepository articleRepository,
-            IPersonRepository personRepository, IUnitRepository unitRepository) : base(mapper)
+        public ArticleManager(ITransactionHandler transactionHandler, IMapper mapper,
+            IPersonRepository personRepository, IUnitRepository unitRepository,
+            IArticleRepository articleRepository) : base(transactionHandler, mapper)
         {
-            ArticleRepository = articleRepository;
             PersonRepository = personRepository;
             UnitRepository = unitRepository;
+            ArticleRepository = articleRepository;
         }
 
-        public async Task<IList<DTO.ArticleResponse>> GetEntitiesAsync(long? id, string name, string description,
-            double? price, int? amount, double? size, DateTime? createdAt, DateTime? updatedAt, DateTime? expirationDate)
+        private async Task<DAO.Article> CheckAccessRightsAndGetArticleAsync(long articleId, string userName,
+            string normalizedUserName)
         {
-            var articles = await ArticleRepository.GetEntitiesAsync(id, name, description, price,
-                amount, size, createdAt, updatedAt, expirationDate);
-            return Mapper.Map<IList<DTO.ArticleResponse>>(articles);
+            var foundArticle = await ArticleRepository.GetEntityByIdAsync(articleId, includes: Includes);
+
+            if (foundArticle == null)
+            {
+                throw new UnautherizedException(OperationNotAllowed);
+            }
+
+            if (foundArticle.Person.UserName != userName ||
+                foundArticle.Person.NormalizedUserName != normalizedUserName)
+            {
+                throw new UnautherizedException(OperationNotAllowed);
+            }
+
+            return foundArticle;
         }
 
-        public async Task<IDictionary<string, IList<DTO.ArticleResponse>>> GetArticlesByNormalizedUserNameAsync(
+        public async Task<DTO.ArticleOutput> InsertEntityAsync(DTO.ArticleInput entity, string userName,
+            string normalizedUserName)
+        {
+            try
+            {
+                await TransactionHandler.BeginTransactionAsync();
+                var person = new DAO.Person
+                {
+                    UserName = userName,
+                    NormalizedUserName = normalizedUserName
+                };
+                var managedPerson = await PersonRepository.InsertOrGetEntityAsync(person);
+
+                var convertedUnit = Mapper.Map<DAO.Unit>(entity.Unit);
+                var managedUnit = await UnitRepository.InsertOrGetEntityAsync(convertedUnit);
+
+                var article = new DAO.Article
+                {
+                    Person = managedPerson,
+                    Unit = managedUnit,
+                    Name = entity.Name,
+                    Description = entity.Description,
+                    Price = entity.Price,
+                    Amount = entity.Amount,
+                    Size = entity.Size,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    ExpirationDate = entity.ExpirationDate
+                };
+                var managedArticle = await ArticleRepository.InsertEntityAsync(article);
+                await TransactionHandler.CommitTransactionAsync();
+                return Mapper.Map<DTO.ArticleOutput>(managedArticle);
+            }
+            catch
+            {
+                await TransactionHandler.RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                await TransactionHandler.DisposeTransactionAsync();
+            }
+        }
+
+        public async Task<DTO.ArticleOutput> UpdateEntityAsync(long id, DTO.ArticleInput entity, string userName,
+            string normalizedUserName)
+        {
+            try
+            {
+                await TransactionHandler.BeginTransactionAsync();
+                var foundArticle = await CheckAccessRightsAndGetArticleAsync(id, userName, normalizedUserName);
+
+                var convertedUnit = Mapper.Map<DAO.Unit>(entity.Unit);
+                var managedUnit = await UnitRepository.InsertOrGetEntityAsync(convertedUnit);
+
+                foundArticle.Unit = managedUnit;
+                foundArticle.Name = entity.Name;
+                foundArticle.Description = entity.Description;
+                foundArticle.Price = entity.Price;
+                foundArticle.Amount = entity.Amount;
+                foundArticle.Size = entity.Size;
+                foundArticle.UpdatedAt = DateTime.UtcNow;
+                foundArticle.ExpirationDate = entity.ExpirationDate;
+                await ArticleRepository.UpdateEntityAsync(foundArticle);
+                await TransactionHandler.CommitTransactionAsync();
+                return Mapper.Map<DTO.ArticleOutput>(foundArticle);
+            }
+            catch
+            {
+                await TransactionHandler.RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                await TransactionHandler.DisposeTransactionAsync();
+            }
+        }
+
+        public async Task<DTO.ArticleOutput> RemoveEntityByIdAsync(long id, string userName, string normalizedUserName)
+        {
+            try
+            {
+                await TransactionHandler.BeginTransactionAsync();
+                var foundArticle = await CheckAccessRightsAndGetArticleAsync(id, userName, normalizedUserName);
+                var removedArticle = await ArticleRepository.RemoveEntityAsync(foundArticle);
+                await TransactionHandler.CommitTransactionAsync();
+                return Mapper.Map<DTO.ArticleOutput>(removedArticle);
+            }
+            catch
+            {
+                await TransactionHandler.RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                await TransactionHandler.DisposeTransactionAsync();
+            }
+        }
+
+        public async Task<IEnumerable<DTO.ArticleOutput>> GetEntitiesAsync(long? id = null, string name = null,
+            string description = null, double? price = null, int? amount = null, double? size = null,
+            DateTime? createdAt = null, DateTime? updatedAt = null, DateTime? expirationDate = null)
+        {
+            var foundArticles = await ArticleRepository.GetEntitiesAsync(filter:
+                a => (id == null || a.Id == id) &&
+                     (name == null || a.Name == name) &&
+                     (description == null || a.Description == description) &&
+                     (price == null || a.Price == price) &&
+                     (amount == null || a.Amount == amount) &&
+                     (size == null || a.Size == size) &&
+                     (createdAt == null || a.CreatedAt == createdAt) &&
+                     (updatedAt == null || a.UpdatedAt == updatedAt) &&
+                     (expirationDate == null || a.ExpirationDate == expirationDate));
+            return Mapper.Map<IEnumerable<DTO.ArticleOutput>>(foundArticles);
+        }
+
+        public async Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByNormalizedUserNameAsync(
             IEnumerable<string> normalizedUserNames)
         {
-            var people = await PersonRepository.GetEntitiesByNormalizedUserNameAsync(normalizedUserNames,
-                new List<string> {nameof(DAO.Person.Articles)});
-
-            var articlesForPeople = new Dictionary<string, IList<DTO.ArticleResponse>>();
-            foreach (var person in people)
-            {
-                if (!articlesForPeople.ContainsKey(person.NormalizedUserName) && person.Articles.Count > 0)
-                {
-                    articlesForPeople.Add(person.NormalizedUserName, new List<DTO.ArticleResponse>());
-                    foreach (var article in person.Articles)
-                    {
-                        articlesForPeople[person.NormalizedUserName].Add(Mapper.Map<DTO.ArticleResponse>(article));
-                    }
-                }
-            }
-
-            return articlesForPeople;
+            var foundArticles = await ArticleRepository.GetEntitiesByNormalizedUserNameAsync(normalizedUserNames);
+            return Mapper.Map<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>(foundArticles);
         }
 
-        public async Task<IDictionary<string, IList<DTO.ArticleResponse>>> GetArticlesByUnitIdAsync(
+        public async Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByUnitIdAsync(
             IEnumerable<long> ids)
         {
-            var units =
-                await UnitRepository.GetEntitiesByIdAsync(ids, new List<string> {nameof(DAO.Unit.Articles)});
-
-            var articlesForUnits = new Dictionary<string, IList<DTO.ArticleResponse>>();
-            foreach (var unit in units)
-            {
-                if (!articlesForUnits.ContainsKey(unit.UnitId.ToString()) && unit.Articles.Count > 0)
-                {
-                    articlesForUnits.Add(unit.UnitId.ToString(), new List<DTO.ArticleResponse>());
-                    foreach (var article in unit.Articles)
-                    {
-                        articlesForUnits[unit.UnitId.ToString()].Add(Mapper.Map<DTO.ArticleResponse>(article));
-                    }
-                }
-            }
-
-            return articlesForUnits;
+            var foundArticles = await ArticleRepository.GetEntitiesByUnitIdAsync(ids);
+            return Mapper.Map<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>(foundArticles);
         }
 
-        public async Task<DTO.ArticleResponse> AddArticle(DTO.ArticleInput articleInput, string normalizedUserName,
-            string userName)
+        public async Task<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByExpirationDateAsync(
+            int amount)
         {
-            if (articleInput.Amount == null || articleInput.Price == null || articleInput.Size == null || 
-                normalizedUserName == null || userName == null)
-            {
-                throw new BadRequestException("The user or the article is invalid.");   
-            }
-            
-            var managedUnit = await UnitRepository.GetOrAddEntityAsync(new DAO.Unit
-            {
-                Name = articleInput.Unit.Name
-            });
-
-            var managedPerson = await PersonRepository.GetOrAddEntityAsync(new DAO.Person
-            {
-                NormalizedUserName = normalizedUserName,
-                UserName = userName
-            });
-            
-            var managedArticle = await ArticleRepository.AddOrUpdateEntityAsync(new DAO.Article
-            {
-                Person = managedPerson,
-                Unit = managedUnit,
-                Amount = articleInput.Amount.Value,
-                Description = articleInput.Description,
-                Name = articleInput.Name,
-                Price = articleInput.Price.Value,
-                Size = articleInput.Size.Value,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            });
-            
-            return Mapper.Map<DTO.ArticleResponse>(managedArticle);
+            var foundArticles = await ArticleRepository.GetEntitiesByExpirationDateAsync(amount);
+            return Mapper.Map<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>>(foundArticles);
         }
 
-        public async Task<IList<DTO.ArticleResponse>> GetArticlesByExpirationDate(int amount)
+        public async Task<IEnumerable<DTO.ArticleOutput>> GetEntitiesByIdAsync(IEnumerable<long> ids)
         {
-            var articles = await ArticleRepository.GetArticlesByExpirationDate(amount);
-            return Mapper.Map<IList<DTO.ArticleResponse>>(articles);
+            var foundArticles = await ArticleRepository.GetEntitiesByIdAsync(ids);
+            return Mapper.Map<IEnumerable<DTO.ArticleOutput>>(foundArticles);
+        }
+
+        public async Task<DTO.ArticleOutput> GetEntityByIdAsync(long id)
+        {
+            var foundArticle = await ArticleRepository.GetEntityByIdAsync(id);
+            return Mapper.Map<DTO.ArticleOutput>(foundArticle);
         }
     }
 }

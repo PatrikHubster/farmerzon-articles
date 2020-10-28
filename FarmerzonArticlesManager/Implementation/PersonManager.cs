@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FarmerzonArticlesDataAccess.Interface;
@@ -12,29 +11,27 @@ namespace FarmerzonArticlesManager.Implementation
 {
     public class PersonManager : AbstractManager, IPersonManager
     {
-        private IArticleRepository ArticleRepository { get; set; }
         private IPersonRepository PersonRepository { get; set; }
 
-        public PersonManager(IMapper mapper, IPersonRepository personRepository, 
-            IArticleRepository articleRepository) : base(mapper)
+        public PersonManager(ITransactionHandler transactionHandler, IMapper mapper,
+            IPersonRepository personRepository) : base(transactionHandler, mapper)
         {
-            ArticleRepository = articleRepository;
             PersonRepository = personRepository;
         }
-        
-        public async Task<IList<DTO.PersonResponse>> GetEntitiesAsync(long? id, string userName, 
+
+        public async Task<IEnumerable<DTO.PersonOutput>> GetEntitiesAsync(long? id, string userName, 
             string normalizedUserName)
         {
-            var people = await PersonRepository.GetEntitiesAsync(id, userName, normalizedUserName);
-            return Mapper.Map<IList<DTO.PersonResponse>>(people);
+            var foundPeople = await PersonRepository.GetEntitiesAsync(filter:
+                p => (id == null || p.Id == id) && (userName == null || p.UserName == userName) &&
+                     (normalizedUserName == null || p.NormalizedUserName == normalizedUserName));
+            return Mapper.Map<IEnumerable<DTO.PersonOutput>>(foundPeople);
         }
 
-        public async Task<IDictionary<string, DTO.PersonResponse>> GetPeopleByArticleIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, DTO.PersonOutput>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids)
         {
-            var articles = 
-                await ArticleRepository.GetEntitiesByIdAsync(ids, new List<string>{nameof(DAO.Article.Person)});
-            return articles.ToDictionary(key => key.ArticleId.ToString(), 
-                value => Mapper.Map<DTO.PersonResponse>(value.Person));
+            var foundPeople = await PersonRepository.GetEntitiesByArticleIdAsync(ids);
+            return Mapper.Map<IDictionary<string, DTO.PersonOutput>>(foundPeople);
         }
     }
 }
