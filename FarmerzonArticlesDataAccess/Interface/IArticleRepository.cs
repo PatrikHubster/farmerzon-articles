@@ -7,9 +7,11 @@ namespace FarmerzonArticlesDataAccess.Interface
 {
     public interface IArticleRepository : IBasicRepository<Article>
     {
-        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByNormalizedUserNameAsync(
-            IEnumerable<string> normalizedUserNames);
-        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids);
-        public Task<IEnumerable<IDictionary<DateTime, Article>>> GetEntitiesByExpirationDateAsync(int amount);
+        public Task<IDictionary<string, IList<Article>>> GetEntitiesByNormalizedUserNameAsync(
+            IEnumerable<string> normalizedUserNames, IEnumerable<string> includes = null);
+        public Task<IDictionary<string, IList<Article>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids,
+            IEnumerable<string> includes = null);
+        public Task<IEnumerable<Article>> GetEntitiesByExpirationDateAsync(int amount, 
+            IEnumerable<string> includes = null);
     }
 }

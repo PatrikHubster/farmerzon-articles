@@ -16,7 +16,7 @@ namespace FarmerzonArticlesManager.Interface
         public Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByNormalizedUserNameAsync(
             IEnumerable<string> normalizedUserNames);
         public Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids);
-        public Task<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByExpirationDateAsync(int amount);
+        public Task<IEnumerable<DTO.ArticleOutput>> GetEntitiesByExpirationDateAsync(int amount);
         public Task<DTO.ArticleOutput> UpdateEntityAsync(long id, DTO.ArticleInput entity, string userName, 
             string normalizedUserName);
         public Task<DTO.ArticleOutput> RemoveEntityByIdAsync(long id, string userName, string normalizedUserName);

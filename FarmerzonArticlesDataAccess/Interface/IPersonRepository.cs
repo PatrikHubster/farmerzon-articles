@@ -6,6 +6,7 @@ namespace FarmerzonArticlesDataAccess.Interface
 {
     public interface IPersonRepository : IBasicRepository<Person>
     {
-        public Task<IDictionary<string, Person>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids);
+        public Task<IDictionary<string, Person>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids,
+            IEnumerable<string> includes = null);
     }
 }

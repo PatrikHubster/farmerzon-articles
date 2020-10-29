@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FarmerzonArticlesDataAccess.Interface;
 using FarmerzonArticlesDataAccessModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
@@ -12,14 +14,21 @@ namespace FarmerzonArticlesDataAccess.Implementation
             // nothing to do here
         }
 
-        protected override Task<Person> GetEntityAsync(Person entity)
+        protected override async Task<Person> GetEntityAsync(Person entity)
         {
-            throw new System.NotImplementedException();
+            return await Context.People
+                .Where(p =>  p.NormalizedUserName == entity.NormalizedUserName)
+                .FirstOrDefaultAsync();
         }
 
-        public Task<IDictionary<string, Person>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, Person>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids, 
+            IEnumerable<string> includes)
         {
-            throw new System.NotImplementedException();
+            return await Context.Articles
+                .Where(a => ids.Contains(a.Id))
+                .IncludeMany(includes, "Person")
+                .ToDictionaryAsync(key => key.Id.ToString(),
+                    value => value.Person);
         }
     }
 }

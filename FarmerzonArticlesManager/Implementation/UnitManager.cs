@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using FarmerzonArticlesDataAccess.Interface;
+using FarmerzonArticlesErrorHandling.CustomException;
 using FarmerzonArticlesManager.Interface;
 
 using DAO = FarmerzonArticlesDataAccessModel;
@@ -19,39 +20,98 @@ namespace FarmerzonArticlesManager.Implementation
             UnitRepository = unitRepository;
         }
 
-        public Task<DTO.UnitOutput> InsertEntityAsync(DTO.UnitInput entity)
+        public async Task<DTO.UnitOutput> InsertEntityAsync(DTO.UnitInput entity)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                await TransactionHandler.BeginTransactionAsync();
+                var convertedUnit = Mapper.Map<DAO.Unit>(entity);
+                var insertedUnit = UnitRepository.InsertOrGetEntityAsync(convertedUnit);
+                await TransactionHandler.CommitTransactionAsync();
+                return Mapper.Map<DTO.UnitOutput>(insertedUnit);
+            }
+            catch
+            {
+                await TransactionHandler.RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                await TransactionHandler.DisposeTransactionAsync();
+            }
         }
 
-        public Task<DTO.UnitOutput> UpdateEntityAsync(long id, DTO.UnitInput entity)
+        public async Task<DTO.UnitOutput> UpdateEntityAsync(long id, DTO.UnitInput entity)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                await TransactionHandler.BeginTransactionAsync();
+                var foundUnit = await UnitRepository.GetEntityByIdAsync(id);
+                if (foundUnit == null)
+                {
+                    throw new NotFoundException("This unit does not exist.");
+                }
+                
+                foundUnit.Name = entity.Name;
+
+                await UnitRepository.UpdateEntityAsync(foundUnit);
+                await TransactionHandler.CommitTransactionAsync();
+                return Mapper.Map<DTO.UnitOutput>(foundUnit);
+            }
+            catch
+            {
+                await TransactionHandler.RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                await TransactionHandler.DisposeTransactionAsync();
+            }
         }
 
-        public Task<DTO.UnitOutput> RemoveEntityByIdAsync(long id)
+        public async Task<DTO.UnitOutput> RemoveEntityByIdAsync(long id)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                await TransactionHandler.BeginTransactionAsync();
+                var removedUnit = await UnitRepository.RemoveEntityByIdAsync(id);
+                await TransactionHandler.CommitTransactionAsync();
+                return Mapper.Map<DTO.UnitOutput>(removedUnit);
+            }
+            catch
+            {
+                await TransactionHandler.RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                await TransactionHandler.DisposeTransactionAsync();
+            }
         }
 
-        public Task<IEnumerable<DTO.UnitOutput>> GetEntitiesByIdAsync(IEnumerable<long> ids)
+        public async Task<IEnumerable<DTO.UnitOutput>> GetEntitiesByIdAsync(IEnumerable<long> ids)
         {
-            throw new System.NotImplementedException();
+            var foundUnits = await UnitRepository.GetEntitiesByIdAsync(ids);
+            return Mapper.Map<IEnumerable<DTO.UnitOutput>>(foundUnits);
         }
 
-        public Task<DTO.UnitOutput> GetEntityByIdAsync(long id)
+        public async Task<DTO.UnitOutput> GetEntityByIdAsync(long id)
         {
-            throw new System.NotImplementedException();
+            var foundUnit = await UnitRepository.GetEntityByIdAsync(id);
+            return Mapper.Map<DTO.UnitOutput>(foundUnit);
         }
 
-        public Task<IEnumerable<DTO.UnitOutput>> GetEntitiesAsync(long? id = null, string name = null)
+        public async Task<IEnumerable<DTO.UnitOutput>> GetEntitiesAsync(long? id = null, string name = null)
         {
-            throw new System.NotImplementedException();
+            var foundUnits = await UnitRepository.GetEntitiesAsync(filter: 
+                u => (id == null || u.Id == id) && (name == null || u.Name == name));
+            return Mapper.Map<IEnumerable<DTO.UnitOutput>>(foundUnits);
         }
 
-        public Task<IDictionary<string, DTO.UnitOutput>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, DTO.UnitOutput>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids)
         {
-            throw new System.NotImplementedException();
+            var foundUnits = await UnitRepository.GetEntitiesByArticleIdAsync(ids);
+            return Mapper.Map<IDictionary<string, DTO.UnitOutput>>(foundUnits);
         }
     }
 }

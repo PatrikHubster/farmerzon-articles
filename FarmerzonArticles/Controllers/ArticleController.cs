@@ -90,14 +90,14 @@ namespace FarmerzonArticles.Controllers
         }
 
         [HttpGet("get-by-expiration-date")]
-        [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>>),
+        [ProducesResponseType(typeof(DTO.SuccessResponse<IEnumerable<DTO.ArticleOutput>>),
             StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetArticlesByExpirationDateAsync([FromQuery] int amount)
         {
             var articles = await ArticleManager.GetEntitiesByExpirationDateAsync(amount);
-            return Ok(new DTO.SuccessResponse<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>>
+            return Ok(new DTO.SuccessResponse<IEnumerable<DTO.ArticleOutput>>
             {
                 Success = true,
                 Content = articles

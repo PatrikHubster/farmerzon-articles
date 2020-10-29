@@ -1,8 +1,9 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FarmerzonArticlesDataAccess.Interface;
 using FarmerzonArticlesDataAccessModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmerzonArticlesDataAccess.Implementation
 {
@@ -15,22 +16,37 @@ namespace FarmerzonArticlesDataAccess.Implementation
 
         protected override Task<Article> GetEntityAsync(Article entity)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<Article>(null);
         }
 
-        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByNormalizedUserNameAsync(IEnumerable<string> normalizedUserNames)
+        public async Task<IDictionary<string, IList<Article>>> GetEntitiesByNormalizedUserNameAsync(
+            IEnumerable<string> normalizedUserNames, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return await Context.People
+                .Where(p => normalizedUserNames.Contains(p.NormalizedUserName))
+                .IncludeMany(includes, "Articles")
+                .ToDictionaryAsync(key => key.NormalizedUserName,
+                    value => value.Articles);
         }
 
-        public Task<IDictionary<string, IEnumerable<Article>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids)
+        public async Task<IDictionary<string, IList<Article>>> GetEntitiesByUnitIdAsync(IEnumerable<long> ids, 
+            IEnumerable<string> includes)
         {
-            throw new NotImplementedException();
+            return await Context.Units
+                .Where(u => ids.Contains(u.Id))
+                .IncludeMany(includes, "Articles")
+                .ToDictionaryAsync(key => key.Id.ToString(),
+                    value => value.Articles);
         }
 
-        public Task<IEnumerable<IDictionary<DateTime, Article>>> GetEntitiesByExpirationDateAsync(int amount)
+        public async Task<IEnumerable<Article>> GetEntitiesByExpirationDateAsync(int amount, 
+            IEnumerable<string> includes)
         {
-            throw new NotImplementedException();
+            return await Context.Articles
+                .IncludeMany(includes)
+                .OrderBy(a => a.ExpirationDate)
+                .Take(amount)
+                .ToListAsync();
         }
     }
 }

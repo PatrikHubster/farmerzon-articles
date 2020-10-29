@@ -13,7 +13,6 @@ namespace FarmerzonArticlesManager.Implementation
     public class ArticleManager : AbstractManager, IArticleManager
     {
         private const string OperationNotAllowed = "This address does not exist or is not accessible for this user.";
-
         private static readonly IList<string> Includes = new List<string>
         {
             nameof(DAO.Article.Unit),
@@ -164,40 +163,40 @@ namespace FarmerzonArticlesManager.Implementation
                      (size == null || a.Size == size) &&
                      (createdAt == null || a.CreatedAt == createdAt) &&
                      (updatedAt == null || a.UpdatedAt == updatedAt) &&
-                     (expirationDate == null || a.ExpirationDate == expirationDate));
+                     (expirationDate == null || a.ExpirationDate == expirationDate), includes: Includes);
             return Mapper.Map<IEnumerable<DTO.ArticleOutput>>(foundArticles);
         }
 
         public async Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByNormalizedUserNameAsync(
             IEnumerable<string> normalizedUserNames)
         {
-            var foundArticles = await ArticleRepository.GetEntitiesByNormalizedUserNameAsync(normalizedUserNames);
+            var foundArticles =
+                await ArticleRepository.GetEntitiesByNormalizedUserNameAsync(normalizedUserNames, includes: Includes);
             return Mapper.Map<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>(foundArticles);
         }
 
         public async Task<IDictionary<string, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByUnitIdAsync(
             IEnumerable<long> ids)
         {
-            var foundArticles = await ArticleRepository.GetEntitiesByUnitIdAsync(ids);
+            var foundArticles = await ArticleRepository.GetEntitiesByUnitIdAsync(ids, includes: Includes);
             return Mapper.Map<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>(foundArticles);
         }
 
-        public async Task<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>> GetEntitiesByExpirationDateAsync(
-            int amount)
+        public async Task<IEnumerable<DTO.ArticleOutput>> GetEntitiesByExpirationDateAsync(int amount)
         {
-            var foundArticles = await ArticleRepository.GetEntitiesByExpirationDateAsync(amount);
-            return Mapper.Map<IDictionary<DateTime, IEnumerable<DTO.ArticleOutput>>>(foundArticles);
+            var foundArticles = await ArticleRepository.GetEntitiesByExpirationDateAsync(amount, includes: Includes);
+            return Mapper.Map<IEnumerable<DTO.ArticleOutput>>(foundArticles);
         }
 
         public async Task<IEnumerable<DTO.ArticleOutput>> GetEntitiesByIdAsync(IEnumerable<long> ids)
         {
-            var foundArticles = await ArticleRepository.GetEntitiesByIdAsync(ids);
+            var foundArticles = await ArticleRepository.GetEntitiesByIdAsync(ids, includes: Includes);
             return Mapper.Map<IEnumerable<DTO.ArticleOutput>>(foundArticles);
         }
 
         public async Task<DTO.ArticleOutput> GetEntityByIdAsync(long id)
         {
-            var foundArticle = await ArticleRepository.GetEntityByIdAsync(id);
+            var foundArticle = await ArticleRepository.GetEntityByIdAsync(id, includes: Includes);
             return Mapper.Map<DTO.ArticleOutput>(foundArticle);
         }
     }
