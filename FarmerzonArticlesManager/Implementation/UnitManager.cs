@@ -26,7 +26,7 @@ namespace FarmerzonArticlesManager.Implementation
             {
                 await TransactionHandler.BeginTransactionAsync();
                 var convertedUnit = Mapper.Map<DAO.Unit>(entity);
-                var insertedUnit = UnitRepository.InsertOrGetEntityAsync(convertedUnit);
+                var insertedUnit = await UnitRepository.InsertEntityAsync(convertedUnit);
                 await TransactionHandler.CommitTransactionAsync();
                 return Mapper.Map<DTO.UnitOutput>(insertedUnit);
             }

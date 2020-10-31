@@ -32,7 +32,7 @@ namespace FarmerzonArticles.Controllers
             var userName = User.FindFirst("userName")?.Value;
             var normalizedUserName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var insertedArticle = await ArticleManager.InsertEntityAsync(article, normalizedUserName, userName);
+            var insertedArticle = await ArticleManager.InsertEntityAsync(article, userName, normalizedUserName);
             return Ok(new DTO.SuccessResponse<DTO.ArticleOutput>
             {
                 Success = true,

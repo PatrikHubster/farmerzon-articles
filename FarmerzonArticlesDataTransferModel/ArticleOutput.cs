@@ -4,6 +4,10 @@ namespace FarmerzonArticlesDataTransferModel
 {
     public class ArticleOutput : BaseModelOutput
     {
+        // relationships
+        public UnitOutput Unit { get; set; }
+
+        // attributes
         public string Name { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }

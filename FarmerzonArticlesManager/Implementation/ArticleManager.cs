@@ -12,7 +12,7 @@ namespace FarmerzonArticlesManager.Implementation
 {
     public class ArticleManager : AbstractManager, IArticleManager
     {
-        private const string OperationNotAllowed = "This address does not exist or is not accessible for this user.";
+        private const string OperationNotAllowed = "This article does not exist or is not accessible for this user.";
         private static readonly IList<string> Includes = new List<string>
         {
             nameof(DAO.Article.Unit),
@@ -67,6 +67,7 @@ namespace FarmerzonArticlesManager.Implementation
                 var convertedUnit = Mapper.Map<DAO.Unit>(entity.Unit);
                 var managedUnit = await UnitRepository.InsertOrGetEntityAsync(convertedUnit);
 
+                var currentDateTime = DateTime.UtcNow;
                 var article = new DAO.Article
                 {
                     Person = managedPerson,
@@ -76,8 +77,8 @@ namespace FarmerzonArticlesManager.Implementation
                     Price = entity.Price,
                     Amount = entity.Amount,
                     Size = entity.Size,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = currentDateTime,
+                    UpdatedAt = currentDateTime,
                     ExpirationDate = entity.ExpirationDate
                 };
                 var managedArticle = await ArticleRepository.InsertEntityAsync(article);
