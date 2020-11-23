@@ -13,6 +13,10 @@ namespace FarmerzonArticlesManager.Implementation
     public class UnitManager : AbstractManager, IUnitManager
     {
         private IUnitRepository UnitRepository { get; set; }
+        private static readonly IList<string> Includes = new List<string>
+        {
+            nameof(DAO.Unit.Articles)
+        };
 
         public UnitManager(ITransactionHandler transactionHandler, IMapper mapper, 
             IUnitRepository unitRepository) : base(transactionHandler, mapper)
@@ -74,7 +78,13 @@ namespace FarmerzonArticlesManager.Implementation
             try
             {
                 await TransactionHandler.BeginTransactionAsync();
-                var removedUnit = await UnitRepository.RemoveEntityByIdAsync(id);
+                var unitToRemove = await UnitRepository.GetEntityAsync(filter: u => u.Id == id, includes: Includes);
+                if (unitToRemove.Articles != null && unitToRemove.Articles.Count > 0)
+                {
+                    throw new BadRequestException("This unit is used by another article.");
+                }
+
+                var removedUnit = await UnitRepository.RemoveEntityAsync(unitToRemove);
                 await TransactionHandler.CommitTransactionAsync();
                 return Mapper.Map<DTO.UnitOutput>(removedUnit);
             }

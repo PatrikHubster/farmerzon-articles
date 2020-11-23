@@ -19,15 +19,6 @@ namespace FarmerzonArticlesManager.Implementation
             PersonRepository = personRepository;
         }
 
-        public async Task<IEnumerable<DTO.PersonOutput>> GetEntitiesAsync(long? id, string userName, 
-            string normalizedUserName)
-        {
-            var foundPeople = await PersonRepository.GetEntitiesAsync(filter:
-                p => (id == null || p.Id == id) && (userName == null || p.UserName == userName) &&
-                     (normalizedUserName == null || p.NormalizedUserName == normalizedUserName));
-            return Mapper.Map<IEnumerable<DTO.PersonOutput>>(foundPeople);
-        }
-
         public async Task<IDictionary<string, DTO.PersonOutput>> GetEntitiesByArticleIdAsync(IEnumerable<long> ids)
         {
             var foundPeople = await PersonRepository.GetEntitiesByArticleIdAsync(ids);
