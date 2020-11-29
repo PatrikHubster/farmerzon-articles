@@ -26,7 +26,7 @@ namespace FarmerzonArticlesDataAccess.Implementation
         {
             return await Context.Articles
                 .Where(a => ids.Contains(a.Id))
-                .IncludeMany(includes)
+                .IncludeMany(includes, "Unit")
                 .ToDictionaryAsync(key => key.Id.ToString(),
                     value => value.Unit);
         }
