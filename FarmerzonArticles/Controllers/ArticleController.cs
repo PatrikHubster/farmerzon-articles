@@ -58,13 +58,13 @@ namespace FarmerzonArticles.Controllers
             });
         }
 
-        [HttpGet("get-by-normalized-user-name")]
+        [HttpPost("get-by-normalized-user-name")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>),
             StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetArticlesByNormalizedUsernameAsync(
-            [FromQuery] IEnumerable<string> normalizedUserNames)
+            [FromBody] IEnumerable<string> normalizedUserNames)
         {
             var articles = await ArticleManager.GetEntitiesByNormalizedUserNameAsync(normalizedUserNames);
             return Ok(new DTO.SuccessResponse<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>
@@ -74,12 +74,12 @@ namespace FarmerzonArticles.Controllers
             });
         }
 
-        [HttpGet("get-by-unit-id")]
+        [HttpPost("get-by-unit-id")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>),
             StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetArticlesByUnitIdAsync([FromQuery] IEnumerable<long> unitIds)
+        public async Task<IActionResult> GetArticlesByUnitIdAsync([FromBody] IEnumerable<long> unitIds)
         {
             var articles = await ArticleManager.GetEntitiesByUnitIdAsync(unitIds);
             return Ok(new DTO.SuccessResponse<IDictionary<string, IEnumerable<DTO.ArticleOutput>>>

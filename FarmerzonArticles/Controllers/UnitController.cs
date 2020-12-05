@@ -49,12 +49,12 @@ namespace FarmerzonArticles.Controllers
             });
         }
 
-        [HttpGet("get-by-article-id")]
+        [HttpPost("get-by-article-id")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, DTO.UnitOutput>>),
             StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUnitsByArticleIdAsync([FromQuery] IEnumerable<long> articleIds)
+        public async Task<IActionResult> GetUnitsByArticleIdAsync([FromBody] IEnumerable<long> articleIds)
         {
             var units = await UnitManager.GetEntitiesByArticleIdAsync(articleIds);
             return Ok(new DTO.SuccessResponse<IDictionary<string, DTO.UnitOutput>>

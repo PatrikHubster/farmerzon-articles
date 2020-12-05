@@ -21,12 +21,12 @@ namespace FarmerzonArticles.Controllers
             PersonManager = personManager;
         }
 
-        [HttpGet("get-by-article-id")]
+        [HttpPost("get-by-article-id")]
         [ProducesResponseType(typeof(DTO.SuccessResponse<IDictionary<string, DTO.PersonOutput>>),
             StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetPeopleByArticleIdAsync([FromQuery] IEnumerable<long> articleIds)
+        public async Task<IActionResult> GetPeopleByArticleIdAsync([FromBody] IEnumerable<long> articleIds)
         {
             var people = await PersonManager.GetEntitiesByArticleIdAsync(articleIds);
             return Ok(new DTO.SuccessResponse<IDictionary<string, DTO.PersonOutput>>
