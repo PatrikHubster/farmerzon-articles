@@ -23,6 +23,17 @@ namespace FarmerzonArticles.Controllers
             ArticleManager = articleManager;
         }
 
+        [HttpGet("info")]
+        public IActionResult GetInfo()
+        {
+            return Ok(new
+            {
+                Version = "1.0.0.0",
+                Information = "This is an information",
+                ServiceName = "farmerzon-articles"
+            });
+        }
+        
         [HttpPost]
         [ProducesResponseType(typeof(DTO.SuccessResponse<DTO.ArticleOutput>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DTO.ErrorResponse), StatusCodes.Status400BadRequest)]
