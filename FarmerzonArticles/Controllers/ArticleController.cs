@@ -28,7 +28,7 @@ namespace FarmerzonArticles.Controllers
         {
             return Ok(new
             {
-                Version = "1.0.0.0",
+                Version = "2.0.0.0",
                 Information = "This is an information",
                 ServiceName = "farmerzon-articles"
             });
