@@ -14,7 +14,7 @@ COPY ./FarmerzonArticlesDataAccessModel/*.csproj FarmerzonArticlesDataAccessMode
 COPY ./FarmerzonArticlesDataTransferModel/*.csproj FarmerzonArticlesDataTransferModel/
 COPY ./FarmerzonArticlesErrorHandling/*.csproj FarmerzonArticlesErrorHandling/
 COPY ./FarmerzonArticlesManager/*.csproj FarmerzonArticlesManager/
-RUN dotnet restore --verbosity detailed
+RUN dotnet restore --verbosity quiet
 COPY . .
 WORKDIR /src/FarmerzonArticles
 RUN dotnet build -c $Configuration -o /app
